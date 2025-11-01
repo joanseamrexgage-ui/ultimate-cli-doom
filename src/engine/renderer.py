@@ -1,5 +1,5 @@
 """
-Enhanced renderer with wall materials, minimap, and navigation aids
+Enhanced renderer with atmospheric graphics, particles, and dynamic lighting
 """
 
 import math
@@ -8,6 +8,7 @@ import random
 from typing import List, Tuple
 from ..core.player import Player
 from ..core.world import World
+from .graphics_fx import GraphicsFX
 
 try:
     import tomllib as toml
@@ -57,6 +58,9 @@ class RaycastingEngine:
         self.minimap_height = int(g.get('minimap_height', 8))
         self.materials_enabled = bool(g.get('materials_enabled', True))
         
+        # Initialize graphics FX system
+        self.gfx = GraphicsFX(self.cfg)
+        
         # Visited areas tracking for minimap
         self.visited = set()
 
@@ -81,14 +85,16 @@ class RaycastingEngine:
     def muzzle_flash(self):
         self.muzzle_flash_ttl = self.muzzle_flash_frames
 
-    def _get_wall_material_char(self, wall_type: str, distance: float, world: World) -> str:
-        """Get wall character based on material and distance"""
+    def _get_wall_material_char(self, wall_type: str, distance: float, world: World, x: int = 0, y: int = 0) -> str:
+        """Get wall character based on material, distance, and lighting"""
         if not self.materials_enabled:
             return self._shade(distance)
             
-        # Get material based on world theme or room type
+        # Get material based on world theme
         material = 'stone'  # Default
-        if hasattr(world, 'theme') and world.theme:
+        if hasattr(world, 'material') and world.material:
+            material = world.material
+        elif hasattr(world, 'theme') and world.theme:
             material_map = {
                 'quantum': 'metal',
                 'atman': 'stone', 
@@ -104,8 +110,12 @@ class RaycastingEngine:
         mat_data = WALL_MATERIALS.get(material, WALL_MATERIALS['stone'])
         symbols = mat_data['symbols']
         
-        # Distance-based material selection
+        # Distance-based material selection with lighting
         t = min(0.99, distance / self.max_depth)
+        
+        # Apply dynamic lighting
+        light_intensity = self.gfx.get_light_intensity(x, y)
+        t = max(0, t / light_intensity)  # Brighter areas appear closer
         
         # Muzzle flash brightening
         if self.muzzle_flash_ttl > 0 and t < 0.3:
@@ -114,13 +124,14 @@ class RaycastingEngine:
         idx = int(t * (len(symbols) - 1))
         return symbols[idx]
 
-    def cast_ray(self, angle: float, world_map: List[str]) -> Tuple[float, str]:
+    def cast_ray(self, angle: float, world_map: List[str]) -> Tuple[float, str, int, int]:
         ox = self.player.x
         oy = self.player.y
         dx = math.cos(angle)
         dy = math.sin(angle)
         step = 0.02
         dist = 0.0
+        hit_x, hit_y = 0, 0
         
         # Track visited areas
         while dist < self.max_depth:
@@ -134,10 +145,13 @@ class RaycastingEngine:
                 self.visited.add((mx, my))
             
             if my < 0 or my >= len(world_map) or mx < 0 or mx >= len(world_map[0]):
-                return self.max_depth, 'void'
+                return self.max_depth, 'void', mx, my
             if world_map[my][mx] not in WALKABLE:
-                return dist, world_map[my][mx]
-        return self.max_depth, 'void'
+                return dist, world_map[my][mx], mx, my
+            
+            hit_x, hit_y = mx, my
+            
+        return self.max_depth, 'void', hit_x, hit_y
 
     def correct_fish_eye(self, d: float, a: float) -> float:
         return d * math.cos(a - self.player.angle)
@@ -232,13 +246,22 @@ class RaycastingEngine:
         if self.muzzle_flash_ttl > 0:
             self.muzzle_flash_ttl -= 1
 
-        screen = [' ' * self.width for _ in range(self.height)]
+        # Update graphics effects
+        self.gfx.update()
+        self.gfx.update_light_sources(world.map)
 
-        # Enhanced sky & floor
-        for y in range(self.height // 2):
-            screen[y] = self.sky_char * self.width
+        screen = [' ' * self.width for _ in range(self.height)]
+        sky_height = self.height // 2
+        
+        # Render animated sky
+        theme = getattr(world, 'theme', 'quantum')
+        screen = self.gfx.render_animated_sky(screen, self.width, sky_height, theme)
+        
+        # Render atmospheric fog at horizon
+        screen = self.gfx.render_fog_layer(screen, self.width, sky_height)
+
+        # Enhanced floor with theme variations
         for y in range(self.height // 2, self.height):
-            # More varied floor texture based on world theme
             floor_line = ''
             floor_chars = [self.floor_char]
             if hasattr(world, 'theme'):
@@ -257,16 +280,16 @@ class RaycastingEngine:
                     floor_line += floor_chars[0]
             screen[y] = floor_line
 
-        # Walls with material-based rendering
+        # Walls with enhanced material and lighting
         for col in range(self.width):
             sc = self._apply_shake(col)
             ray_angle = (self.player.angle - self.fov / 2 + col / self.width * self.fov)
-            distance, wall_type = self.cast_ray(ray_angle, world.map)
+            distance, wall_type, hit_x, hit_y = self.cast_ray(ray_angle, world.map)
             cd = self.correct_fish_eye(distance, ray_angle)
             wall_height = self.height if cd <= 0.1 else min(self.height, int(self.height / cd))
             
-            # Use material-based character
-            ch = self._get_wall_material_char(wall_type, cd, world)
+            # Use material-based character with lighting
+            ch = self._get_wall_material_char(wall_type, cd, world, hit_x, hit_y)
             
             y0 = max(0, self.height // 2 - wall_height // 2)
             y1 = min(self.height, self.height // 2 + wall_height // 2)
@@ -299,10 +322,14 @@ class RaycastingEngine:
         # Render enemy projectiles
         screen = self.render_enemy_bullets(screen, enemies)
 
-        # Render player projectiles (rockets)
+        # Render player projectiles with smoke trails
         for proj in self.projectiles:
             if not proj.get('alive', True):
                 continue
+            
+            # Spawn smoke trail
+            self.gfx.spawn_smoke_trail(proj['x'], proj['y'])
+            
             dx = proj['x'] - self.player.x
             dy = proj['y'] - self.player.y
             dist = math.hypot(dx, dy)
@@ -316,6 +343,9 @@ class RaycastingEngine:
                 if 0 <= sx < self.width:
                     line = screen[sy]
                     screen[sy] = line[:sx] + 'o' + line[sx+1:]
+
+        # Render particles (sparks, debris, smoke)
+        screen = self.gfx.render_particles(screen, self.player.x, self.player.y, self.player.angle, self.fov, self.width)
 
         # Add minimap
         screen = self._render_minimap(screen, world, enemies)
@@ -426,9 +456,12 @@ class RaycastingEngine:
             if abs(diff) < aim_tol and d < min_d:
                 min_d = d
                 hit_enemy = e
+        
         if hit_enemy and hasattr(hit_enemy, 'take_damage'):
             hit_enemy.take_damage(damage)
             self.player.score += 10
+            # Spawn hit sparks
+            self.gfx.spawn_sparks(hit_enemy.x, hit_enemy.y, 2)
             return True
         return False
 
@@ -477,11 +510,15 @@ class RaycastingEngine:
             mx, my = int(proj['x']), int(proj['y'])
             if my < 0 or my >= len(world.map) or mx < 0 or mx >= len(world.map[0]) or world.map[my][mx] not in WALKABLE:
                 proj['alive'] = False
+                # Spawn explosion debris
+                self.gfx.spawn_debris(proj['x'], proj['y'], 12)
                 for e in enemies:
                     if getattr(e, 'alive', False):
                         d = math.hypot(e.x - proj['x'], e.y - proj['y'])
                         if d <= radius:
                             e.take_damage(damage)
+                            # Extra sparks for rocket hits
+                            self.gfx.spawn_sparks(e.x, e.y, 4)
                 if self.banner_cb:
                     self.banner_cb('BOOM!')
 
@@ -518,6 +555,9 @@ class RaycastingEngine:
                     damage_angle = math.atan2(bullet['dy'], bullet['dx'])
                     player_hit = True
                     
+                    # Spawn hit sparks on player
+                    self.gfx.spawn_sparks(self.player.x, self.player.y, 3)
+                    
                     # Trigger feedback
                     self.damage_feedback()
                     if self.damage_direction_cb:
@@ -537,6 +577,8 @@ class RaycastingEngine:
                 continue
             if abs(p.x - self.player.x) < 0.5 and abs(p.y - self.player.y) < 0.5:
                 p.taken = True
+                # Spawn pickup sparkle
+                self.gfx.spawn_sparks(p.x, p.y, 1)
                 if p.kind == 'health':
                     self.player.heal(p.amount)
                     if self.banner_cb:
