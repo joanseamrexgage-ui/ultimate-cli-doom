@@ -1,0 +1,33 @@
+# Ultimate CLI DOOM - Phase 2 Config
+# Tweakable knobs for graphics and gameplay without code changes
+
+[graphics]
+fov = 1.0471975512  # 60 degrees in radians
+max_depth = 16.0
+sky_gradient = ["·","·","·","."," "]
+wall_palette = [" ","░","▒","▓","█"]
+floor_char = "~"
+sky_char = "·"
+weapon_overlay = true
+camera_shake = true
+shake_strength = 1
+shake_frames = 3
+
+[gameplay]
+safety_radius = 0.5
+aim_tolerance = 0.3
+player_speed = 0.2
+rotate_speed = 0.2
+pistol_damage = 25
+shotgun_pellets = 5
+shotgun_spread = 0.2
+shotgun_damage = 12
+rocket_speed = 0.6
+rocket_radius = 1.2
+rocket_damage = 40
+
+[spawns]
+enemy_count = 6
+health_pack_chance = 0.08
+ammo_pack_chance = 0.10
+keycard_chance = 0.03
