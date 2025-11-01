@@ -1,5 +1,5 @@
 """
-Depth shading, dithering, and weapon overlay for ASCII renderer
+Integrate pickups rendering and interaction; add shotgun and rocket weapons
 """
 
 import math
@@ -10,9 +10,11 @@ from ..core.player import Player
 from ..core.world import World
 
 try:
-    import tomllib as toml  # py3.11+
-except Exception:  # pragma: no cover
+    import tomllib as toml
+except Exception:
     toml = None
+
+WALKABLE = {'.', '·', '~', ' '}
 
 class RaycastingEngine:
     def __init__(self, width: int = 80, height: int = 25, config_path: str = 'config.toml'):
@@ -20,8 +22,6 @@ class RaycastingEngine:
         self.height = height
         self.fov = math.pi / 3
         self.max_depth = 16.0
-
-        # Load config if available
         self.cfg = {}
         if toml is not None:
             try:
@@ -29,7 +29,6 @@ class RaycastingEngine:
                     self.cfg = toml.load(f)
             except Exception:
                 self.cfg = {}
-        
         g = self.cfg.get('graphics', {})
         self.fov = float(g.get('fov', self.fov))
         self.max_depth = float(g.get('max_depth', self.max_depth))
@@ -43,7 +42,11 @@ class RaycastingEngine:
 
         self.player = Player(x=1.5, y=1.5, angle=0)
         self.shake_ttl = 0
+        self.projectiles = []  # rockets: list of dict(x,y,dx,dy,alive)
+        self.banner_cb = None  # optional HUD notify callback
+        self.flash_cb = None   # optional HUD damage flash callback
 
+    # --- helpers ---
     def _apply_shake(self, x: int) -> int:
         if self.camera_shake and self.shake_ttl > 0:
             return max(0, min(self.width - 1, x + random.randint(-self.shake_strength, self.shake_strength)))
@@ -51,13 +54,15 @@ class RaycastingEngine:
 
     def damage_feedback(self):
         self.shake_ttl = self.shake_frames
+        if self.flash_cb:
+            self.flash_cb()
 
+    # --- core casting ---
     def cast_ray(self, angle: float, world_map: List[str]) -> Tuple[float, str]:
         ox = self.player.x
         oy = self.player.y
         dx = math.cos(angle)
         dy = math.sin(angle)
-
         step = 0.02
         dist = 0.0
         while dist < self.max_depth:
@@ -67,7 +72,7 @@ class RaycastingEngine:
             mx, my = int(ox), int(oy)
             if my < 0 or my >= len(world_map) or mx < 0 or mx >= len(world_map[0]):
                 return self.max_depth, 'void'
-            if world_map[my][mx] not in ['.', '·', '~', ' ']:
+            if world_map[my][mx] not in WALKABLE:
                 return dist, world_map[my][mx]
         return self.max_depth, 'void'
 
@@ -75,13 +80,13 @@ class RaycastingEngine:
         return d * math.cos(a - self.player.angle)
 
     def _shade(self, distance: float) -> str:
-        # Map distance to palette index with simple dithering
         if distance >= self.max_depth:
             return ' '
         t = distance / self.max_depth
         idx = int(t * (len(self.palette) - 1))
         return self.palette[idx]
 
+    # --- rendering ---
     def render_3d(self, world: World, enemies: List = None) -> List[str]:
         if enemies is None:
             enemies = []
@@ -89,7 +94,6 @@ class RaycastingEngine:
             self.shake_ttl -= 1
 
         screen = [' ' * self.width for _ in range(self.height)]
-
         # sky & floor
         for y in range(self.height // 2):
             screen[y] = self.sky_char * self.width
@@ -109,7 +113,46 @@ class RaycastingEngine:
                 line = screen[row]
                 screen[row] = line[:sc] + ch + line[sc+1:]
 
+        # pickups rendering
+        for p in getattr(world, 'pickups', []) or []:
+            if p.taken:
+                continue
+            dx = p.x - self.player.x
+            dy = p.y - self.player.y
+            dist = math.hypot(dx, dy)
+            if dist == 0:
+                continue
+            ang = math.atan2(dy, dx) - self.player.angle
+            if abs(ang) < self.fov / 2:
+                sx = int((ang + self.fov / 2) / self.fov * self.width)
+                sy = self.height // 2
+                sx = self._apply_shake(sx)
+                if 0 <= sx < self.width:
+                    line = screen[sy]
+                    sym = p.symbol()[0]
+                    screen[sy] = line[:sx] + sym + line[sx+1:]
+
+        # enemies
         screen = self.render_enemies(screen, enemies)
+
+        # projectiles (rockets) drawn as 'o'
+        for proj in self.projectiles:
+            if not proj.get('alive', True):
+                continue
+            dx = proj['x'] - self.player.x
+            dy = proj['y'] - self.player.y
+            dist = math.hypot(dx, dy)
+            if dist == 0:
+                continue
+            ang = math.atan2(dy, dx) - self.player.angle
+            if abs(ang) < self.fov / 2:
+                sx = int((ang + self.fov / 2) / self.fov * self.width)
+                sy = self.height // 2
+                sx = self._apply_shake(sx)
+                if 0 <= sx < self.width:
+                    line = screen[sy]
+                    screen[sy] = line[:sx] + 'o' + line[sx+1:]
+
         if self.weapon_overlay_enabled:
             self._overlay_weapon(screen)
         return screen
@@ -149,8 +192,10 @@ class RaycastingEngine:
                 row = row[:self.width - start]
                 screen[y] = line[:start] + row + line[start+len(row):]
 
+    # --- movement ---
     def move_player(self, key: str):
-        speed = 0.2
+        speed = float(self.cfg.get('gameplay', {}).get('player_speed', 0.2))
+        rot = float(self.cfg.get('gameplay', {}).get('rotate_speed', 0.2))
         if key == 'w':
             dx = speed * math.cos(self.player.angle)
             dy = speed * math.sin(self.player.angle)
@@ -160,17 +205,13 @@ class RaycastingEngine:
             dy = -speed * math.sin(self.player.angle)
             self.player.move(dx, dy)
         elif key == 'a':
-            self.player.rotate(-0.2)
+            self.player.rotate(-rot)
         elif key == 'd':
-            self.player.rotate(0.2)
+            self.player.rotate(rot)
 
-    def player_shoot(self, enemies: List = None) -> bool:
-        if enemies is None:
-            enemies = []
-        if not self.player.shoot():
-            return False
+    # --- weapons ---
+    def _hitscan(self, enemies: List, damage: int, aim_tol: float) -> bool:
         safety_radius = float(self.cfg.get('gameplay', {}).get('safety_radius', 0.5))
-        aim_tolerance = float(self.cfg.get('gameplay', {}).get('aim_tolerance', 0.3))
         hit_enemy = None
         min_d = float('inf')
         for e in enemies:
@@ -183,14 +224,90 @@ class RaycastingEngine:
                 continue
             ang = math.atan2(dy, dx)
             diff = (ang - self.player.angle + math.pi) % (2*math.pi) - math.pi
-            if abs(diff) < aim_tolerance and d < min_d:
+            if abs(diff) < aim_tol and d < min_d:
                 min_d = d
                 hit_enemy = e
         if hit_enemy and hasattr(hit_enemy, 'take_damage'):
-            hit_enemy.take_damage(int(self.cfg.get('gameplay', {}).get('pistol_damage', 25)))
+            hit_enemy.take_damage(damage)
             self.player.score += 10
             return True
         return False
+
+    def player_shoot(self, enemies: List = None, mode: str = 'pistol') -> bool:
+        if enemies is None:
+            enemies = []
+        if not self.player.shoot():
+            return False
+        gp = self.cfg.get('gameplay', {})
+        if mode == 'pistol':
+            dmg = int(gp.get('pistol_damage', 25))
+            tol = float(gp.get('aim_tolerance', 0.3))
+            return self._hitscan(enemies, dmg, tol)
+        if mode == 'shotgun':
+            pellets = int(gp.get('shotgun_pellets', 5))
+            spread = float(gp.get('shotgun_spread', 0.2))
+            dmg = int(gp.get('shotgun_damage', 12))
+            tol = float(gp.get('aim_tolerance', 0.3))
+            hit = False
+            base_angle = self.player.angle
+            for i in range(pellets):
+                # jitter aim per pellet
+                self.player.angle = base_angle + random.uniform(-spread, spread)
+                hit = self._hitscan(enemies, dmg, tol) or hit
+            self.player.angle = base_angle
+            return hit
+        if mode == 'rocket':
+            speed = float(gp.get('rocket_speed', 0.6))
+            dx = math.cos(self.player.angle) * speed
+            dy = math.sin(self.player.angle) * speed
+            self.projectiles.append({'x': self.player.x, 'y': self.player.y, 'dx': dx, 'dy': dy, 'alive': True})
+            return True
+        return False
+
+    def update_projectiles(self, world: World, enemies: List):
+        # simple projectile simulation + AoE on collision
+        gp = self.cfg.get('gameplay', {})
+        radius = float(gp.get('rocket_radius', 1.2))
+        damage = int(gp.get('rocket_damage', 40))
+        for proj in self.projectiles:
+            if not proj.get('alive', True):
+                continue
+            # step
+            proj['x'] += proj['dx']
+            proj['y'] += proj['dy']
+            mx, my = int(proj['x']), int(proj['y'])
+            # collide with wall
+            if my < 0 or my >= len(world.map) or mx < 0 or mx >= len(world.map[0]) or world.map[my][mx] not in WALKABLE:
+                proj['alive'] = False
+                # AoE damage
+                for e in enemies:
+                    if getattr(e, 'alive', False):
+                        d = math.hypot(e.x - proj['x'], e.y - proj['y'])
+                        if d <= radius:
+                            e.take_damage(damage)
+                if self.banner_cb:
+                    self.banner_cb('BOOM!')
+
+    # --- pickups interaction ---
+    def try_pickups(self, world: World):
+        if not hasattr(world, 'pickups') or not world.pickups:
+            return
+        for p in world.pickups:
+            if p.taken:
+                continue
+            if abs(p.x - self.player.x) < 0.5 and abs(p.y - self.player.y) < 0.5:
+                p.taken = True
+                if p.kind == 'health':
+                    self.player.heal(p.amount)
+                    if self.banner_cb:
+                        self.banner_cb('Picked up health')
+                elif p.kind == 'ammo':
+                    self.player.add_ammo(p.amount)
+                    if self.banner_cb:
+                        self.banner_cb('Picked up ammo')
+                elif p.kind == 'keycard':
+                    if self.banner_cb:
+                        self.banner_cb('Keycard acquired')
 
     def clear_screen(self):
         os.system('cls' if os.name == 'nt' else 'clear')
