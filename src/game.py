@@ -6,24 +6,15 @@
 import sys
 from .engine.renderer import RaycastingEngine
 from .world.generator import ProceduralWorldGenerator
+from .ai.enemies import SimpleEnemyAI
+from .audio.sound import ASCIISoundSystem
+from .ui.hud import GameHUD
 
 # Mock classes for systems not yet implemented
-class QuantumEnemyAI:
-    def spawn_enemies(self, world): return []
-    def update(self, enemies, player): pass
-
 class MultiplayerManager:
     def connect(self): pass
     def sync_state(self): pass
     def disconnect(self): pass
-
-class ASCIISoundSystem:
-    def initialize(self): pass
-    def play_shoot(self): pass
-
-class GameHUD:
-    def __init__(self, width, height): pass
-    def add_overlay(self, frame, stats): return frame
 
 class UltimateCliDoom:
     def __init__(self, width=80, height=25, dev_mode=False, multiplayer=False):
@@ -35,7 +26,7 @@ class UltimateCliDoom:
         # Initialize systems
         self.engine = RaycastingEngine(width, height)
         self.world_gen = ProceduralWorldGenerator()
-        self.enemy_ai = QuantumEnemyAI()
+        self.enemy_ai = SimpleEnemyAI()
         self.sound = ASCIISoundSystem()
         self.hud = GameHUD(width, height)
 
@@ -46,6 +37,7 @@ class UltimateCliDoom:
         self.running = True
         self.paused = False
         self.current_level = 1
+        self.tick = 0
 
     def run(self):
         """Main game loop"""
@@ -63,23 +55,28 @@ class UltimateCliDoom:
         print("🌌 Generating quantum world...")
         self.world = self.world_gen.generate_level(self.current_level)
 
-        print("🤖 Awakening AI enemies...")
-        self.enemies = self.enemy_ai.spawn_enemies(self.world)
+        print("🤖 Spawning enemies...")
+        self.enemies = self.enemy_ai.spawn_enemies(self.world, count=5)
 
-        print("🔊 Tuning OM frequencies...")
+        print("🔊 Initializing sound...")
         self.sound.initialize()
 
         if self.multiplayer_enabled:
-            print("🌐 Connecting to quantum network...")
+            print("🌐 Connecting to network...")
             self.multiplayer.connect()
 
     def update(self):
         """Update game logic"""
         if self.paused:
             return
+        self.tick += 1
 
-        # Update enemies with quantum AI
+        # Update enemies
         self.enemy_ai.update(self.enemies, self.engine.player)
+
+        # Periodic events (e.g., passive score gain)
+        if self.tick % 100 == 0:
+            self.engine.player.score += 1
 
         # Update multiplayer state
         if self.multiplayer_enabled:
@@ -87,10 +84,9 @@ class UltimateCliDoom:
 
     def render(self):
         """Render frame"""
-        # Clear screen
         self.engine.clear_screen()
 
-        # Render 3D world
+        # Render 3D world + enemies
         frame = self.engine.render_3d(self.world, self.enemies)
 
         # Add HUD
@@ -101,7 +97,6 @@ class UltimateCliDoom:
             'score': self.engine.player.score
         })
 
-        # Display frame
         for line in frame:
             print(line)
 
@@ -121,6 +116,12 @@ class UltimateCliDoom:
             elif key == ' ':
                 if self.engine.player_shoot(self.enemies):
                     self.sound.play_shoot()
+            elif key == 'h':
+                # quick heal for demo pacing
+                self.engine.player.heal(10)
+            elif key == 'e':
+                # emulate damage to feel tension
+                self.engine.player.take_damage(10)
         except KeyboardInterrupt:
             self.quit_game()
         except:
