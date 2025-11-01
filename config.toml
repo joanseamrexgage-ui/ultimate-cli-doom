@@ -1,5 +1,5 @@
-# Ultimate CLI DOOM - Enhanced Graphics & Navigation Config
-# Tweakable knobs for graphics, materials, navigation without code changes
+# Ultimate CLI DOOM - Enhanced Graphics & Atmospheric Effects Config
+# Tweakable knobs for graphics, materials, navigation, and atmospheric effects
 
 [graphics]
 fov = 1.0471975512  # 60 degrees in radians
@@ -21,18 +21,20 @@ minimap_width = 15
 minimap_height = 8
 materials_enabled = true
 
-# Advanced Visual Effects (can be disabled for performance)
-sky_animated = false
-fog_enabled = false
+# Atmospheric Graphics Effects - NOW ENABLED!
+sky_animated = true
+fog_enabled = true
 fog_speed = 0.8
 fog_intensity = 0.25
-particles_enabled = false
+particles_enabled = true
 sparks_ttl = 3
 debris_ttl = 8
 particles_max = 200
-lights_enabled = false
+lights_enabled = true
 light_radius = 3
 light_pulse_speed = 1.2
+
+# Advanced Effects (optional)
 glitch_on_critical = false
 glitch_threshold_hp = 20
 
