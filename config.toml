@@ -1,5 +1,5 @@
-# Ultimate CLI DOOM - Phase 2 Config
-# Tweakable knobs for graphics and gameplay without code changes
+# Ultimate CLI DOOM - Enhanced Graphics & Navigation Config
+# Tweakable knobs for graphics, materials, navigation without code changes
 
 [graphics]
 fov = 1.0471975512  # 60 degrees in radians
@@ -14,6 +14,27 @@ shake_strength = 1
 shake_frames = 3
 muzzle_flash_frames = 2
 muzzle_flash_brightness = 2
+
+# Navigation & Visual Clarity
+minimap_enabled = true
+minimap_width = 15
+minimap_height = 8
+materials_enabled = true
+
+# Advanced Visual Effects (can be disabled for performance)
+sky_animated = false
+fog_enabled = false
+fog_speed = 0.8
+fog_intensity = 0.25
+particles_enabled = false
+sparks_ttl = 3
+debris_ttl = 8
+particles_max = 200
+lights_enabled = false
+light_radius = 3
+light_pulse_speed = 1.2
+glitch_on_critical = false
+glitch_threshold_hp = 20
 
 [gameplay]
 safety_radius = 0.5
@@ -37,6 +58,14 @@ telegraph_frames = 30
 fire_cooldown = 60
 bullet_speed = 0.4
 bullet_damage = 15
+
+[world]
+# Room-based generation for better navigation
+room_gen_enabled = true
+room_min = 4
+room_max = 7
+room_size_min = 4
+room_size_max = 8
 
 [spawns]
 enemy_count = 6
