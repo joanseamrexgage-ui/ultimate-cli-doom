@@ -12,6 +12,8 @@ weapon_overlay = true
 camera_shake = true
 shake_strength = 1
 shake_frames = 3
+muzzle_flash_frames = 2
+muzzle_flash_brightness = 2
 
 [gameplay]
 safety_radius = 0.5
@@ -26,8 +28,26 @@ rocket_speed = 0.6
 rocket_radius = 1.2
 rocket_damage = 40
 
+[ai]
+runner_speed = 0.07
+tank_speed = 0.03
+shooter_spawn_chance = 0.3
+tank_spawn_chance = 0.2
+telegraph_frames = 30
+fire_cooldown = 60
+bullet_speed = 0.4
+bullet_damage = 15
+
 [spawns]
 enemy_count = 6
 health_pack_chance = 0.08
 ammo_pack_chance = 0.10
 keycard_chance = 0.03
+door_count = 2
+exit_count = 1
+
+[progression]
+difficulty_scaling = 0.1  # per level multiplier
+max_enemies_per_level = 12
+min_health_packs = 1
+max_health_packs = 4
