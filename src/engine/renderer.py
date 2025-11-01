@@ -174,13 +174,18 @@ class RaycastingEngine:
             self.player.rotate(0.2)
 
     def player_shoot(self, enemies: List = None) -> bool:
-        """Handle player shooting"""
+        """Handle player shooting with ammo, safety radius, and angle normalization"""
         if enemies is None:
             enemies = []
-            
-        # Simple shooting: remove nearest enemy in crosshair
+        
+        # Spend ammo safely
+        if not self.player.shoot():
+            return False
+        
         hit_enemy = None
         min_distance = float('inf')
+        safety_radius = 0.5  # don't shoot at point-blank to avoid self-hit illusion
+        aim_tolerance = 0.3
 
         for enemy in enemies:
             if not hasattr(enemy, 'alive') or not enemy.alive:
@@ -188,12 +193,15 @@ class RaycastingEngine:
 
             dx = enemy.x - self.player.x
             dy = enemy.y - self.player.y
-            distance = math.sqrt(dx**2 + dy**2)
-            angle = math.atan2(dy, dx)
-            angle_diff = abs(angle - self.player.angle)
+            distance = math.hypot(dx, dy)
+            if distance < safety_radius:
+                continue
 
-            # Check if enemy is in crosshair (small angle tolerance)
-            if angle_diff < 0.3 and distance < min_distance:
+            angle = math.atan2(dy, dx)
+            # normalize angle difference to [-pi, pi]
+            angle_diff = (angle - self.player.angle + math.pi) % (2 * math.pi) - math.pi
+
+            if abs(angle_diff) < aim_tolerance and distance < min_distance:
                 min_distance = distance
                 hit_enemy = enemy
 

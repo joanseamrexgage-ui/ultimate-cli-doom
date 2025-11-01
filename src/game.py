@@ -71,8 +71,8 @@ class UltimateCliDoom:
             return
         self.tick += 1
 
-        # Update enemies
-        self.enemy_ai.update(self.enemies, self.engine.player)
+        # Update enemies with world collision
+        self.enemy_ai.update(self.enemies, self.engine.player, world=self.world)
 
         # Periodic events (e.g., passive score gain)
         if self.tick % 100 == 0:
@@ -117,10 +117,8 @@ class UltimateCliDoom:
                 if self.engine.player_shoot(self.enemies):
                     self.sound.play_shoot()
             elif key == 'h':
-                # quick heal for demo pacing
                 self.engine.player.heal(10)
             elif key == 'e':
-                # emulate damage to feel tension
                 self.engine.player.take_damage(10)
         except KeyboardInterrupt:
             self.quit_game()
