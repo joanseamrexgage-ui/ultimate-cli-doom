@@ -1,13 +1,19 @@
 """
-Wire HUD/engine callbacks; add weapon mode switching and projectile update; handle enemy shooter telegraph
+🎮 ULTIMATE CLI DOOM - Enhanced Game Loop with AI integration
+Координирует все системы: engine, world, AI, network
 """
 
 import sys
 from .engine.renderer import RaycastingEngine
 from .world.generator import ProceduralWorldGenerator
-from .ai.enemies import SimpleEnemyAI
+from .ai.enemies import AdvancedEnemyAI
 from .audio.sound import ASCIISoundSystem
 from .ui.hud import GameHUD
+
+try:
+    import tomllib as toml
+except Exception:
+    toml = None
 
 class MultiplayerManager:
     def connect(self): pass
@@ -15,21 +21,33 @@ class MultiplayerManager:
     def disconnect(self): pass
 
 class UltimateCliDoom:
-    def __init__(self, width=80, height=25, dev_mode=False, multiplayer=False):
+    def __init__(self, width=80, height=25, dev_mode=False, multiplayer=False, config_path='config.toml'):
         self.width = width
         self.height = height
         self.dev_mode = dev_mode
         self.multiplayer_enabled = multiplayer
+        self.config_path = config_path
+        
+        # Load config
+        self.config = {}
+        if toml is not None:
+            try:
+                with open(config_path, 'rb') as f:
+                    self.config = toml.load(f)
+            except Exception:
+                self.config = {}
 
-        self.engine = RaycastingEngine(width, height)
-        self.world_gen = ProceduralWorldGenerator()
-        self.enemy_ai = SimpleEnemyAI()
+        # Initialize systems with config
+        self.engine = RaycastingEngine(width, height, config_path)
+        self.world_gen = ProceduralWorldGenerator(config=self.config)
+        self.enemy_ai = AdvancedEnemyAI(config=self.config)
         self.sound = ASCIISoundSystem()
         self.hud = GameHUD(width, height)
 
-        # wire feedback callbacks
+        # Wire feedback callbacks
         self.engine.banner_cb = lambda text: self.hud.notify(text)
         self.engine.flash_cb = lambda: self.hud.damage_flash()
+        self.engine.damage_direction_cb = lambda angle: self.hud.set_damage_direction(angle)
 
         if multiplayer:
             self.multiplayer = MultiplayerManager()
@@ -39,6 +57,14 @@ class UltimateCliDoom:
         self.current_level = 1
         self.tick = 0
         self.weapon_mode = 'pistol'  # 'pistol' | 'shotgun' | 'rocket'
+        
+        # Level objectives
+        self.objectives = {
+            'kill_count': 0,
+            'pickup_count': 0,
+            'target_kills': 0,
+            'target_pickups': 0
+        }
 
     def run(self):
         self.initialize()
@@ -51,25 +77,87 @@ class UltimateCliDoom:
     def initialize(self):
         print("🌌 Generating quantum world...")
         self.world = self.world_gen.generate_level(self.current_level)
+        
+        # Set level objectives
+        spawn_cfg = self.config.get('spawns', {})
+        enemy_count = int(spawn_cfg.get('enemy_count', 6))
+        self.objectives['target_kills'] = max(enemy_count // 2, 3)
+        self.objectives['target_pickups'] = 2
+        
         print("🤖 Spawning enemies...")
-        self.enemies = self.enemy_ai.spawn_enemies(self.world, count=6)
+        self.enemies = self.enemy_ai.spawn_enemies(self.world, count=enemy_count)
+        
         print("🔊 Initializing sound...")
         self.sound.initialize()
+        
+        # Set initial objective direction
+        self._update_objective_direction()
+        
         if self.multiplayer_enabled:
             print("🌐 Connecting to network...")
             self.multiplayer.connect()
+
+    def _update_objective_direction(self):
+        """Update HUD compass objective direction"""
+        # Find nearest keycard or enemy
+        nearest_keycard = None
+        nearest_enemy = None
+        min_keycard_dist = float('inf')
+        min_enemy_dist = float('inf')
+        
+        # Check keycards
+        for pickup in getattr(self.world, 'pickups', []):
+            if not pickup.taken and pickup.kind == 'keycard':
+                dist = abs(pickup.x - self.engine.player.x) + abs(pickup.y - self.engine.player.y)
+                if dist < min_keycard_dist:
+                    min_keycard_dist = dist
+                    nearest_keycard = pickup
+        
+        # Check enemies
+        alive_enemies = [e for e in self.enemies if getattr(e, 'alive', False)]
+        for enemy in alive_enemies:
+            dist = abs(enemy.x - self.engine.player.x) + abs(enemy.y - self.engine.player.y)
+            if dist < min_enemy_dist:
+                min_enemy_dist = dist
+                nearest_enemy = enemy
+        
+        # Set objective
+        if nearest_keycard:
+            dx = nearest_keycard.x - self.engine.player.x
+            dy = nearest_keycard.y - self.engine.player.y
+            angle = math.atan2(dy, dx)
+            self.hud.set_objective(angle, "GET KEY")
+        elif len(alive_enemies) > 0:
+            if nearest_enemy:
+                dx = nearest_enemy.x - self.engine.player.x
+                dy = nearest_enemy.y - self.engine.player.y
+                angle = math.atan2(dy, dx)
+                self.hud.set_objective(angle, f"KILL {len(alive_enemies)}")
+        else:
+            self.hud.set_objective(None, "LEVEL CLEAR!")
 
     def update(self):
         if self.paused:
             return
         self.tick += 1
+        
+        # Update enemies and handle damage to player
         self.enemy_ai.update(self.enemies, self.engine.player, world=self.world)
-        # projectiles
+        
+        # Update projectiles
         self.engine.update_projectiles(self.world, self.enemies)
-        # pickups
+        self.engine.update_enemy_bullets(self.enemies)
+        
+        # Update pickups
         self.engine.try_pickups(self.world)
+        
+        # Update objectives
+        self._update_objective_direction()
+        
+        # Passive score
         if self.tick % 100 == 0:
             self.engine.player.score += 1
+            
         if self.multiplayer_enabled:
             self.multiplayer.sync_state()
 
@@ -81,7 +169,8 @@ class UltimateCliDoom:
             'health': self.engine.player.health,
             'ammo': self.engine.player.ammo,
             'score': self.engine.player.score
-        })
+        }, player_angle=self.engine.player.angle)
+        
         for line in frame:
             print(line)
 
@@ -99,6 +188,7 @@ class UltimateCliDoom:
             elif key == ' ':
                 if self.engine.player_shoot(self.enemies, mode=self.weapon_mode):
                     self.sound.play_shoot()
+                    self.hud.muzzle_flash()
             elif key == '1':
                 self.weapon_mode = 'pistol'
                 self.hud.notify('Pistol')
