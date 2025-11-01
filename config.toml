@@ -1,5 +1,5 @@
-# Ultimate CLI DOOM - Enhanced Graphics & Atmospheric Effects Config
-# Tweakable knobs for graphics, materials, navigation, and atmospheric effects
+# Ultimate CLI DOOM - NEXT-GEN Graphics Configuration
+# Revolutionary ASCII graphics with AAA-quality effects
 
 [graphics]
 fov = 1.0471975512  # 60 degrees in radians
@@ -15,13 +15,13 @@ shake_frames = 3
 muzzle_flash_frames = 2
 muzzle_flash_brightness = 2
 
-# Navigation & Visual Clarity
+# Navigation & Visual Clarity (Always Enabled)
 minimap_enabled = true
 minimap_width = 15
 minimap_height = 8
 materials_enabled = true
 
-# Atmospheric Graphics Effects - NOW ENABLED!
+# Enhanced Atmospheric Effects (Safe Defaults)
 sky_animated = true
 fog_enabled = true
 fog_speed = 0.8
@@ -29,14 +29,36 @@ fog_intensity = 0.25
 particles_enabled = true
 sparks_ttl = 3
 debris_ttl = 8
-particles_max = 200
+particles_max = 300
 lights_enabled = true
 light_radius = 3
 light_pulse_speed = 1.2
 
-# Advanced Effects (optional)
-glitch_on_critical = false
-glitch_threshold_hp = 20
+# ULTIMATE NEXT-GEN FEATURES (Configure as needed)
+# Ray-tracing and Global Illumination
+reflections = false           # Metal surfaces reflect environment
+gi_volumetrics = true         # Visible light rays in fog
+shadows = false              # Dynamic shadow casting
+
+# Advanced Shaders
+ssao = true                  # Screen Space Ambient Occlusion
+bloom = true                 # Bright object glow
+motion_blur = false          # Movement blur effects
+dof = false                  # Depth of Field blur
+chromatic_aberration = false # Edge color distortion
+
+# Physics Systems
+fluids = false               # Blood/liquid simulation
+destructibles = false        # Wall damage system
+wind = false                 # Particle wind effects
+
+# Next-Gen Tuning Parameters
+[graphics.tuning]
+ray_depth = 1               # Reflection ray bounces
+ao_radius = 1               # SSAO sample radius
+bloom_strength = 0.3        # Bloom intensity
+blur_strength = 0.2         # Motion blur amount
+dof_focus = 5.0             # Depth of field focus distance
 
 [gameplay]
 safety_radius = 0.5
@@ -62,7 +84,7 @@ bullet_speed = 0.4
 bullet_damage = 15
 
 [world]
-# Room-based generation for better navigation
+# Enhanced room-based generation
 room_gen_enabled = true
 room_min = 4
 room_max = 7
@@ -78,7 +100,31 @@ door_count = 2
 exit_count = 1
 
 [progression]
-difficulty_scaling = 0.1  # per level multiplier
+difficulty_scaling = 0.1
 max_enemies_per_level = 12
 min_health_packs = 1
 max_health_packs = 4
+
+# PERFORMANCE PROFILES
+# Uncomment one of these presets:
+
+# [graphics.preset.ultra]  # Maximum visual quality
+# reflections = true
+# gi_volumetrics = true
+# shadows = true
+# ssao = true
+# bloom = true
+# motion_blur = true
+# dof = true
+# fluids = true
+# destructibles = true
+# wind = true
+# chromatic_aberration = true
+
+# [graphics.preset.performance]  # Optimized for speed
+# reflections = false
+# gi_volumetrics = false
+# shadows = false
+# ssao = false
+# bloom = false
+# particles_enabled = false
