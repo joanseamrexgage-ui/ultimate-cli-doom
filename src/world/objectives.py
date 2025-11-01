@@ -17,6 +17,7 @@ class Door:
         self.locked = locked
         self.opened = False
     
+        
     def symbol(self) -> str:
         if self.opened:
             return '·'  # Open space
@@ -48,8 +49,8 @@ class LevelObjective:
 
 def place_doors_and_exits(world_map: List[str], config: dict) -> Tuple[List[Door], List[Exit]]:
     """Place doors and exits in strategic locations"""
-    doors = []
-    exits = []
+    doors: List[Door] = []
+    exits: List[Exit] = []
     
     door_count = int(config.get('spawns', {}).get('door_count', 2))
     exit_count = int(config.get('spawns', {}).get('exit_count', 1))
@@ -58,7 +59,8 @@ def place_doors_and_exits(world_map: List[str], config: dict) -> Tuple[List[Door
     width = len(world_map[0])
     
     # Find wall positions suitable for doors (walls with adjacent walkable spaces)
-    door_candidates = []\n    for y in range(1, height-1):
+    door_candidates: List[Tuple[int, int]] = []
+    for y in range(1, height-1):
         for x in range(1, width-1):
             if world_map[y][x] not in WALKABLE:
                 # Check if this wall has walkable spaces on opposite sides
@@ -78,7 +80,7 @@ def place_doors_and_exits(world_map: List[str], config: dict) -> Tuple[List[Door
         world_map[y] = ''.join(row)
     
     # Find positions for exits (far from spawn, preferably corners)
-    exit_candidates = []
+    exit_candidates: List[Tuple[int, int, float]] = []
     spawn_x, spawn_y = 1.5, 1.5  # Assumed spawn
     
     for y in range(1, height-1):
@@ -104,7 +106,7 @@ def place_doors_and_exits(world_map: List[str], config: dict) -> Tuple[List[Door
 
 def generate_objectives(level: int, enemy_count: int, pickup_count: int) -> List[LevelObjective]:
     """Generate level objectives based on level and content"""
-    objectives = []
+    objectives: List[LevelObjective] = []
     
     # Scale difficulty with level
     kill_target = max(2, enemy_count // 2 + level // 3)
