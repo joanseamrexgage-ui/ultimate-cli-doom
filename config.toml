@@ -1,8 +1,8 @@
-# Ultimate CLI DOOM - NEXT-GEN Graphics Configuration
-# Revolutionary ASCII graphics with AAA-quality effects
+# Ultimate CLI DOOM - GODLIKE ASCII GRAPHICS Configuration
+# Reality-bending visual effects that transcend ASCII limitations
 
 [graphics]
-fov = 1.0471975512  # 60 degrees in radians
+fov = 1.0471975512
 max_depth = 16.0
 sky_gradient = ["·","·","·","."," "]
 wall_palette = [" ","░","▒","▓","█"]
@@ -21,7 +21,7 @@ minimap_width = 15
 minimap_height = 8
 materials_enabled = true
 
-# Enhanced Atmospheric Effects (Safe Defaults)
+# Enhanced Atmospheric Effects (Optimized Defaults)
 sky_animated = true
 fog_enabled = true
 fog_speed = 0.8
@@ -29,36 +29,51 @@ fog_intensity = 0.25
 particles_enabled = true
 sparks_ttl = 3
 debris_ttl = 8
-particles_max = 300
+particles_max = 400  # Increased for godlike effects
 lights_enabled = true
 light_radius = 3
 light_pulse_speed = 1.2
 
-# ULTIMATE NEXT-GEN FEATURES (Configure as needed)
-# Ray-tracing and Global Illumination
-reflections = false           # Metal surfaces reflect environment
-gi_volumetrics = true         # Visible light rays in fog
-shadows = false              # Dynamic shadow casting
+# ULTIMATE NEXT-GEN FEATURES (Balanced Performance)
+reflections = false
+gi_volumetrics = true
+shadows = false
+ssao = true
+bloom = true
+motion_blur = false
+dof = false
+chromatic_aberration = false
+fluids = false
+destructibles = false
+wind = false
 
-# Advanced Shaders
-ssao = true                  # Screen Space Ambient Occlusion
-bloom = true                 # Bright object glow
-motion_blur = false          # Movement blur effects
-dof = false                  # Depth of Field blur
-chromatic_aberration = false # Edge color distortion
+# GODLIKE QUANTUM EFFECTS (Experimental - Enable Carefully)
+[godlike_fx]
+hologram_projection = false    # Objects flicker between reality states
+matrix_rain = false           # Digital rain when critical health
+quantum_tunneling = false     # Enemies/bullets can phase through walls
+reality_glitch = false        # Random screen distortions
+living_walls = false          # Walls breathe and grow organically
+growing_crystals = false      # Procedural crystal/plant growth
+ai_upscaling = false          # AI-enhanced character detail
+emotion_driven = true         # Colors adapt to player state (safe)
+electromagnetic_fields = false # Visualize EM fields around metal
+time_effects = false          # Bullet time and temporal distortion
+portal_rendering = false      # Portals show other areas
+thermal_imaging = false       # See enemy heat signatures
 
-# Physics Systems
-fluids = false               # Blood/liquid simulation
-destructibles = false        # Wall damage system
-wind = false                 # Particle wind effects
+# Godlike Effect Intensities
+glitch_intensity = 0.05       # Reality distortion amount (0.0-1.0)
+hologram_flicker = 0.3        # Hologram stability (0.0-1.0)
+wall_breathing = 0.2          # Living wall animation strength
 
-# Next-Gen Tuning Parameters
+# Performance Tuning
 [graphics.tuning]
-ray_depth = 1               # Reflection ray bounces
-ao_radius = 1               # SSAO sample radius
-bloom_strength = 0.3        # Bloom intensity
-blur_strength = 0.2         # Motion blur amount
-dof_focus = 5.0             # Depth of field focus distance
+ray_depth = 1
+ao_radius = 1
+bloom_strength = 0.35
+blur_strength = 0.2
+dof_focus = 5.0
 
 [gameplay]
 safety_radius = 0.5
@@ -84,7 +99,6 @@ bullet_speed = 0.4
 bullet_damage = 15
 
 [world]
-# Enhanced room-based generation
 room_gen_enabled = true
 room_min = 4
 room_max = 7
@@ -105,10 +119,10 @@ max_enemies_per_level = 12
 min_health_packs = 1
 max_health_packs = 4
 
-# PERFORMANCE PROFILES
-# Uncomment one of these presets:
+# PERFORMANCE PRESETS (Uncomment one preset):
 
-# [graphics.preset.ultra]  # Maximum visual quality
+# GODLIKE PRESET - Maximum Visual Fidelity (Powerful Systems Only)
+# [graphics.preset.godlike]
 # reflections = true
 # gi_volumetrics = true
 # shadows = true
@@ -120,11 +134,39 @@ max_health_packs = 4
 # destructibles = true
 # wind = true
 # chromatic_aberration = true
+# [godlike_fx]
+# hologram_projection = true
+# matrix_rain = true
+# quantum_tunneling = true
+# reality_glitch = true
+# living_walls = true
+# growing_crystals = true
+# ai_upscaling = true
+# electromagnetic_fields = true
+# time_effects = true
+# thermal_imaging = true
 
-# [graphics.preset.performance]  # Optimized for speed
-# reflections = false
-# gi_volumetrics = false
+# ULTRA PRESET - High Visual Quality (Modern Systems)
+# [graphics.preset.ultra]
+# reflections = true
+# gi_volumetrics = true
 # shadows = false
-# ssao = false
-# bloom = false
+# ssao = true
+# bloom = true
+# motion_blur = false
+# dof = true
+# fluids = true
+# destructibles = true
+# [godlike_fx]
+# hologram_projection = true
+# quantum_tunneling = true
+# living_walls = true
+# ai_upscaling = true
+
+# PERFORMANCE PRESET - Optimized for Speed
+# [graphics.preset.performance]
 # particles_enabled = false
+# lights_enabled = false
+# sky_animated = false
+# fog_enabled = false
+# All godlike_fx = false
