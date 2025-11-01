@@ -1,0 +1,2 @@
+# Production dependencies (minimal)
+# No external deps - pure Python stdlib only
