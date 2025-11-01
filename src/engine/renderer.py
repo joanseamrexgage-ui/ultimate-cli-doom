@@ -1,5 +1,5 @@
 """
-Enhanced renderer with enemy bullets, muzzle flash, and biome palettes
+Enhanced renderer with wall materials, minimap, and navigation aids
 """
 
 import math
@@ -15,6 +15,14 @@ except Exception:
     toml = None
 
 WALKABLE = {'.', '·', '~', ' '}
+
+# Wall material mappings for better navigation
+WALL_MATERIALS = {
+    'stone': {'symbols': ['▒', '▓', '█'], 'base': '▒'},
+    'brick': {'symbols': ['░', '▒', '▓'], 'base': '░'},  
+    'metal': {'symbols': ['█', '▓', '▒'], 'base': '█'},
+    'wood': {'symbols': ['║', '│', '┃'], 'base': '║'}
+}
 
 class RaycastingEngine:
     def __init__(self, width: int = 80, height: int = 25, config_path: str = 'config.toml'):
@@ -42,6 +50,15 @@ class RaycastingEngine:
         self.shake_frames = int(g.get('shake_frames', 3))
         self.muzzle_flash_frames = int(g.get('muzzle_flash_frames', 2))
         self.muzzle_flash_brightness = int(g.get('muzzle_flash_brightness', 2))
+        
+        # Navigation aids
+        self.minimap_enabled = bool(g.get('minimap_enabled', True))
+        self.minimap_width = int(g.get('minimap_width', 15))
+        self.minimap_height = int(g.get('minimap_height', 8))
+        self.materials_enabled = bool(g.get('materials_enabled', True))
+        
+        # Visited areas tracking for minimap
+        self.visited = set()
 
         self.player = Player(x=1.5, y=1.5, angle=0)
         self.shake_ttl = 0
@@ -64,6 +81,39 @@ class RaycastingEngine:
     def muzzle_flash(self):
         self.muzzle_flash_ttl = self.muzzle_flash_frames
 
+    def _get_wall_material_char(self, wall_type: str, distance: float, world: World) -> str:
+        """Get wall character based on material and distance"""
+        if not self.materials_enabled:
+            return self._shade(distance)
+            
+        # Get material based on world theme or room type
+        material = 'stone'  # Default
+        if hasattr(world, 'theme') and world.theme:
+            material_map = {
+                'quantum': 'metal',
+                'atman': 'stone', 
+                'loqiemean': 'brick',
+                'batut': 'wood'
+            }
+            material = material_map.get(world.theme, 'stone')
+        
+        # Apply distance-based shading to material
+        if distance >= self.max_depth:
+            return ' '
+            
+        mat_data = WALL_MATERIALS.get(material, WALL_MATERIALS['stone'])
+        symbols = mat_data['symbols']
+        
+        # Distance-based material selection
+        t = min(0.99, distance / self.max_depth)
+        
+        # Muzzle flash brightening
+        if self.muzzle_flash_ttl > 0 and t < 0.3:
+            t = max(0, t - self.muzzle_flash_brightness * 0.1)
+        
+        idx = int(t * (len(symbols) - 1))
+        return symbols[idx]
+
     def cast_ray(self, angle: float, world_map: List[str]) -> Tuple[float, str]:
         ox = self.player.x
         oy = self.player.y
@@ -71,11 +121,18 @@ class RaycastingEngine:
         dy = math.sin(angle)
         step = 0.02
         dist = 0.0
+        
+        # Track visited areas
         while dist < self.max_depth:
             ox += dx * step
             oy += dy * step
             dist += step
             mx, my = int(ox), int(oy)
+            
+            # Mark as visited for minimap
+            if 0 <= mx < 100 and 0 <= my < 100:  # Reasonable bounds
+                self.visited.add((mx, my))
+            
             if my < 0 or my >= len(world_map) or mx < 0 or mx >= len(world_map[0]):
                 return self.max_depth, 'void'
             if world_map[my][mx] not in WALKABLE:
@@ -86,16 +143,86 @@ class RaycastingEngine:
         return d * math.cos(a - self.player.angle)
 
     def _shade(self, distance: float) -> str:
+        """Fallback shading when materials disabled"""
         if distance >= self.max_depth:
             return ' '
         t = distance / self.max_depth
         
-        # Muzzle flash brightening effect
-        if self.muzzle_flash_ttl > 0 and t < 0.3:  # Brighten center view
+        if self.muzzle_flash_ttl > 0 and t < 0.3:
             t = max(0, t - self.muzzle_flash_brightness * 0.1)
         
         idx = int(t * (len(self.palette) - 1))
         return self.palette[idx]
+
+    def _render_minimap(self, screen: List[str], world: World, enemies: List) -> List[str]:
+        """Render minimap in top-right corner"""
+        if not self.minimap_enabled:
+            return screen
+            
+        # Calculate minimap bounds around player
+        px, py = int(self.player.x), int(self.player.y)
+        map_h, map_w = len(world.map), len(world.map[0])
+        
+        start_x = max(0, px - self.minimap_width // 2)
+        start_y = max(0, py - self.minimap_height // 2)
+        end_x = min(map_w, start_x + self.minimap_width)
+        end_y = min(map_h, start_y + self.minimap_height)
+        
+        # Position minimap in top-right
+        minimap_screen_x = self.width - self.minimap_width - 1
+        minimap_screen_y = 4  # Below HUD
+        
+        for my in range(start_y, end_y):
+            screen_y = minimap_screen_y + (my - start_y)
+            if screen_y >= len(screen):
+                break
+                
+            line = screen[screen_y]
+            
+            for mx in range(start_x, end_x):
+                screen_x = minimap_screen_x + (mx - start_x)
+                if screen_x >= self.width:
+                    break
+                    
+                # Only show visited areas
+                if (mx, my) not in self.visited:
+                    continue
+                    
+                char = '?'  # Unknown
+                
+                # Player position
+                if abs(mx - px) < 1 and abs(my - py) < 1:
+                    char = '@'
+                # Enemies
+                elif any(abs(e.x - mx - 0.5) < 1 and abs(e.y - my - 0.5) < 1 
+                        and getattr(e, 'alive', False) for e in enemies):
+                    char = '!'
+                # Doors
+                elif hasattr(world, 'doors'):
+                    door = next((d for d in world.doors if d.x == mx and d.y == my), None)
+                    if door:
+                        char = '|' if door.locked else '='
+                # Exits  
+                elif hasattr(world, 'exits'):
+                    exit_obj = next((e for e in world.exits if e.x == mx and e.y == my), None)
+                    if exit_obj:
+                        char = '>' if exit_obj.active else 'x'
+                # Pickups
+                elif hasattr(world, 'pickups'):
+                    pickup = next((p for p in world.pickups 
+                                 if not p.taken and abs(p.x - mx - 0.5) < 1 and abs(p.y - my - 0.5) < 1), None)
+                    if pickup:
+                        char = '+' if pickup.kind == 'health' else ('·' if pickup.kind == 'ammo' else '*')
+                # Walls vs floors
+                elif world.map[my][mx] not in WALKABLE:
+                    char = '#'
+                else:
+                    char = '.'
+                
+                # Insert into screen line
+                screen[screen_y] = line[:screen_x] + char + line[screen_x + 1:]
+        
+        return screen
 
     def render_3d(self, world: World, enemies: List = None) -> List[str]:
         if enemies is None:
@@ -107,27 +234,40 @@ class RaycastingEngine:
 
         screen = [' ' * self.width for _ in range(self.height)]
 
-        # Sky & floor with subtle floor dithering
+        # Enhanced sky & floor
         for y in range(self.height // 2):
             screen[y] = self.sky_char * self.width
         for y in range(self.height // 2, self.height):
-            # Add subtle floor texture variation
+            # More varied floor texture based on world theme
             floor_line = ''
+            floor_chars = [self.floor_char]
+            if hasattr(world, 'theme'):
+                theme_floors = {
+                    'quantum': ['.', '·', '¨'],
+                    'atman': ['·', '∘', '°'],
+                    'loqiemean': ['~', '≈', '∼'],
+                    'batut': [' ', '·', '`']
+                }
+                floor_chars = theme_floors.get(world.theme, [self.floor_char])
+            
             for x in range(self.width):
-                if random.random() < 0.05:  # 5% chance for variation
-                    floor_line += '·' if self.floor_char == '~' else '~'
+                if random.random() < 0.08:  # 8% variation
+                    floor_line += random.choice(floor_chars)
                 else:
-                    floor_line += self.floor_char
+                    floor_line += floor_chars[0]
             screen[y] = floor_line
 
-        # Walls with enhanced shading
+        # Walls with material-based rendering
         for col in range(self.width):
             sc = self._apply_shake(col)
             ray_angle = (self.player.angle - self.fov / 2 + col / self.width * self.fov)
             distance, wall_type = self.cast_ray(ray_angle, world.map)
             cd = self.correct_fish_eye(distance, ray_angle)
             wall_height = self.height if cd <= 0.1 else min(self.height, int(self.height / cd))
-            ch = self._shade(cd)
+            
+            # Use material-based character
+            ch = self._get_wall_material_char(wall_type, cd, world)
+            
             y0 = max(0, self.height // 2 - wall_height // 2)
             y1 = min(self.height, self.height // 2 + wall_height // 2)
             for row in range(y0, y1):
@@ -176,6 +316,9 @@ class RaycastingEngine:
                 if 0 <= sx < self.width:
                     line = screen[sy]
                     screen[sy] = line[:sx] + 'o' + line[sx+1:]
+
+        # Add minimap
+        screen = self._render_minimap(screen, world, enemies)
 
         if self.weapon_overlay_enabled:
             self._overlay_weapon(screen)
@@ -245,6 +388,9 @@ class RaycastingEngine:
                 screen[y] = line[:start] + row + line[start+len(row):]
 
     def move_player(self, key: str):
+        # Mark current position as visited
+        self.visited.add((int(self.player.x), int(self.player.y)))
+        
         speed = float(self.cfg.get('gameplay', {}).get('player_speed', 0.2))
         rot = float(self.cfg.get('gameplay', {}).get('rotate_speed', 0.2))
         if key == 'w':
@@ -259,6 +405,9 @@ class RaycastingEngine:
             self.player.rotate(-rot)
         elif key == 'd':
             self.player.rotate(rot)
+        
+        # Update visited after move
+        self.visited.add((int(self.player.x), int(self.player.y)))
 
     def _hitscan(self, enemies: List, damage: int, aim_tol: float) -> bool:
         safety_radius = float(self.cfg.get('gameplay', {}).get('safety_radius', 0.5))
@@ -378,7 +527,6 @@ class RaycastingEngine:
 
     def _can_move_to(self, x: float, y: float) -> bool:
         tx, ty = int(x), int(y)
-        # Assume we have world access through game loop
         return True  # Simplified for now
 
     def try_pickups(self, world: World):
