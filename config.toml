@@ -1,5 +1,5 @@
-# Ultimate CLI DOOM - GODLIKE ASCII GRAPHICS Configuration
-# Reality-bending visual effects that transcend ASCII limitations
+# Ultimate CLI DOOM - TRANSCENDENT ASCII GRAPHICS Configuration
+# Consciousness-driven visual effects that transcend the boundaries of reality
 
 [graphics]
 fov = 1.0471975512
@@ -15,13 +15,13 @@ shake_frames = 3
 muzzle_flash_frames = 2
 muzzle_flash_brightness = 2
 
-# Navigation & Visual Clarity (Always Enabled)
+# Navigation & Visual Clarity (Always Protected)
 minimap_enabled = true
 minimap_width = 15
 minimap_height = 8
 materials_enabled = true
 
-# Enhanced Atmospheric Effects (Optimized Defaults)
+# Enhanced Atmospheric Effects (Stable Base)
 sky_animated = true
 fog_enabled = true
 fog_speed = 0.8
@@ -29,12 +29,12 @@ fog_intensity = 0.25
 particles_enabled = true
 sparks_ttl = 3
 debris_ttl = 8
-particles_max = 400  # Increased for godlike effects
+particles_max = 500  # Increased for transcendent effects
 lights_enabled = true
 light_radius = 3
 light_pulse_speed = 1.2
 
-# ULTIMATE NEXT-GEN FEATURES (Balanced Performance)
+# ULTIMATE NEXT-GEN FEATURES (Optimized)
 reflections = false
 gi_volumetrics = true
 shadows = false
@@ -47,25 +47,71 @@ fluids = false
 destructibles = false
 wind = false
 
-# GODLIKE QUANTUM EFFECTS (Experimental - Enable Carefully)
+# GODLIKE QUANTUM EFFECTS (Advanced)
 [godlike_fx]
-hologram_projection = false    # Objects flicker between reality states
-matrix_rain = false           # Digital rain when critical health
-quantum_tunneling = false     # Enemies/bullets can phase through walls
-reality_glitch = false        # Random screen distortions
-living_walls = false          # Walls breathe and grow organically
-growing_crystals = false      # Procedural crystal/plant growth
-ai_upscaling = false          # AI-enhanced character detail
-emotion_driven = true         # Colors adapt to player state (safe)
-electromagnetic_fields = false # Visualize EM fields around metal
-time_effects = false          # Bullet time and temporal distortion
-portal_rendering = false      # Portals show other areas
-thermal_imaging = false       # See enemy heat signatures
+hologram_projection = false
+matrix_rain = false
+quantum_tunneling = false
+reality_glitch = false
+living_walls = false
+growing_crystals = false
+ai_upscaling = false
+emotion_driven = true
+electromagnetic_fields = false
+time_effects = false
+portal_rendering = false
+thermal_imaging = false
 
-# Godlike Effect Intensities
-glitch_intensity = 0.05       # Reality distortion amount (0.0-1.0)
-hologram_flicker = 0.3        # Hologram stability (0.0-1.0)
-wall_breathing = 0.2          # Living wall animation strength
+# Godlike Tuning
+glitch_intensity = 0.05
+hologram_flicker = 0.3
+wall_breathing = 0.2
+
+# 🔮 TRANSCENDENT CONSCIOUSNESS EFFECTS (Experimental)
+[transcendent_fx]
+# Consciousness & Perception
+psychedelic_distortion = false    # Screen breathes with consciousness
+synesthesia_effects = false       # Sounds become geometric patterns
+dream_logic = false              # Reality operates by dream rules
+memory_echoes = false            # Ghosts of past events patrol areas
+
+# Multidimensional Geometry
+non_euclidean_spaces = false     # Corridors longer inside than outside
+fractal_architecture = false     # Infinite recursive wall patterns
+four_d_shadows = false          # Objects cast 4D shadows
+topology_shifts = false         # Rooms connect impossibly
+
+# Metaphysical Systems
+karma_visualization = true       # Actions affect world colors (safe)
+chakra_energy = false           # Player aura affects environment
+astral_projection = false       # See souls of enemies
+dimensional_bleeding = false     # Other levels bleed through
+
+# Quantum Consciousness
+observer_effect = false         # Walls change when not observed
+schrodinger_states = false      # Enemies exist in superposition
+quantum_entanglement = false    # Damage spreads between entities
+wave_function_collapse = false  # Reality solidifies on decisions
+
+# Divine & Sacred
+sacred_geometry = false         # Mandala patterns appear
+divine_illumination = false     # God rays from nowhere
+enlightenment_particles = false # Achievement transcendence effects
+angelic_chorus = false          # Symbols harmonize and sing
+
+# Transcendent Weapons
+transcendent_weapons = false    # Concept guns, love beams, void launchers
+thought_cannon = false          # Shoots ideas (∞ ∅ ∴ ∵ ∷)
+reality_hacker = false          # Rewrites reality in real-time
+love_beam = false               # Converts enemies through empathy
+void_launcher = false           # Erases parts of reality
+
+# Transcendent Intensities
+distortion_strength = 0.3       # Psychedelic distortion amount
+fractal_complexity = 0.2        # Fractal pattern density
+consciousness_sensitivity = 0.5  # How responsive to mental state
+karma_influence = 0.4           # How much karma affects visuals
+enlightenment_threshold = 0.8   # When divine effects activate
 
 # Performance Tuning
 [graphics.tuning]
@@ -119,54 +165,79 @@ max_enemies_per_level = 12
 min_health_packs = 1
 max_health_packs = 4
 
-# PERFORMANCE PRESETS (Uncomment one preset):
+# 🌠 TRANSCENDENT PRESETS - Choose Your Reality Level
 
-# GODLIKE PRESET - Maximum Visual Fidelity (Powerful Systems Only)
-# [graphics.preset.godlike]
-# reflections = true
-# gi_volumetrics = true
-# shadows = true
-# ssao = true
-# bloom = true
-# motion_blur = true
-# dof = true
-# fluids = true
-# destructibles = true
-# wind = true
-# chromatic_aberration = true
-# [godlike_fx]
-# hologram_projection = true
-# matrix_rain = true
-# quantum_tunneling = true
-# reality_glitch = true
-# living_walls = true
-# growing_crystals = true
-# ai_upscaling = true
-# electromagnetic_fields = true
-# time_effects = true
-# thermal_imaging = true
+# TRANSCENDENT PRESET - Maximum Consciousness Expansion (Spiritual Systems)
+# [transcendent_fx.preset.transcendent]
+# karma_visualization = true
+# chakra_energy = true
+# sacred_geometry = true
+# divine_illumination = true
+# enlightenment_particles = true
+# memory_echoes = true
+# astral_projection = true
+# consciousness_sensitivity = 1.0
+# enlightenment_threshold = 0.5
 
-# ULTRA PRESET - High Visual Quality (Modern Systems)
-# [graphics.preset.ultra]
-# reflections = true
-# gi_volumetrics = true
-# shadows = false
-# ssao = true
-# bloom = true
-# motion_blur = false
-# dof = true
-# fluids = true
-# destructibles = true
-# [godlike_fx]
-# hologram_projection = true
-# quantum_tunneling = true
-# living_walls = true
-# ai_upscaling = true
+# PSYCHEDELIC PRESET - Reality Distortion (Artistic Systems)
+# [transcendent_fx.preset.psychedelic]
+# psychedelic_distortion = true
+# synesthesia_effects = true
+# dream_logic = true
+# fractal_architecture = true
+# non_euclidean_spaces = true
+# distortion_strength = 0.8
+# fractal_complexity = 0.6
 
-# PERFORMANCE PRESET - Optimized for Speed
-# [graphics.preset.performance]
-# particles_enabled = false
-# lights_enabled = false
-# sky_animated = false
-# fog_enabled = false
-# All godlike_fx = false
+# QUANTUM PRESET - Physics-Breaking Effects (Scientific Systems)
+# [transcendent_fx.preset.quantum]
+# observer_effect = true
+# schrodinger_states = true
+# quantum_entanglement = true
+# dimensional_bleeding = true
+# four_d_shadows = true
+# wave_function_collapse = true
+
+# DIVINE PRESET - Sacred Gaming Experience (Mystical Systems)
+# [transcendent_fx.preset.divine]
+# sacred_geometry = true
+# divine_illumination = true
+# angelic_chorus = true
+# enlightenment_particles = true
+# transcendent_weapons = true
+# love_beam = true
+# thought_cannon = true
+
+# REALITY_HACKER PRESET - Ultimate Power (All Systems)
+# [transcendent_fx.preset.reality_hacker]
+# # Enable ALL transcendent effects
+# psychedelic_distortion = true
+# synesthesia_effects = true
+# dream_logic = true
+# memory_echoes = true
+# non_euclidean_spaces = true
+# fractal_architecture = true
+# karma_visualization = true
+# chakra_energy = true
+# astral_projection = true
+# dimensional_bleeding = true
+# observer_effect = true
+# schrodinger_states = true
+# sacred_geometry = true
+# divine_illumination = true
+# transcendent_weapons = true
+# reality_hacker = true
+# distortion_strength = 1.0
+# fractal_complexity = 1.0
+# consciousness_sensitivity = 1.0
+
+# MEDITATION PRESET - Calm Transcendence (Peaceful Systems)
+# [transcendent_fx.preset.meditation]
+# karma_visualization = true
+# chakra_energy = true
+# sacred_geometry = true
+# memory_echoes = true
+# enlightenment_particles = true
+# distortion_strength = 0.2
+# consciousness_sensitivity = 0.8
+# enlightenment_threshold = 0.3
