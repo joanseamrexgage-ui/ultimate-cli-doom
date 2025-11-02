@@ -1,0 +1,30 @@
+# Ultimate CLI DOOM - PACIFIST ART MODE
+# Disable mobs and weapons to focus on transcendent visuals
+
+[graphics]
+weapon_overlay = false
+
+[spawns]
+enemy_count = 0
+
+[ai]
+runner_speed = 0.0
+shooter_spawn_chance = 0.0
+tank_spawn_chance = 0.0
+
+[gameplay]
+pistol_damage = 0
+shotgun_pellets = 0
+shotgun_damage = 0
+rocket_damage = 0
+
+[godlike_fx]
+emotion_driven = true
+
+[transcendent_fx]
+psychedelic_distortion = true
+synesthesia_effects = true
+dream_logic = true
+fractal_architecture = true
+non_euclidean_spaces = true
+karma_visualization = true
