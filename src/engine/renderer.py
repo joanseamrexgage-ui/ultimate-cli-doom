@@ -1,6 +1,6 @@
 """
-GODLIKE ASCII GRAPHICS Renderer
-Reality-bending visual effects that transcend ASCII limitations
+ABSOLUTE ASCII GRAPHICS Renderer
+Beyond transcendence: Multiverse, 5D hyperspatial, consciousness waves
 """
 
 import math
@@ -11,6 +11,8 @@ from ..core.player import Player
 from ..core.world import World
 from .graphics_fx import NextGenGraphicsFX
 from .godlike_fx import GodlikeGraphicsFX
+from .transcendent_fx import TranscendentGraphicsFX
+from .absolute_graphics import AbsoluteGraphicsEngine
 
 try:
     import tomllib as toml
@@ -19,56 +21,43 @@ except Exception:
 
 WALKABLE = {'.', '·', '~', ' '}
 
-# GODLIKE wall material mappings with quantum properties
-GODLIKE_MATERIALS = {
+# ABSOLUTE wall material mappings with hyperdimensional properties
+ABSOLUTE_MATERIALS = {
     'stone': {
         'symbols': ['▒', '▓', '█'], 
         'base': '▒',
-        'reflectivity': 0.1,
-        'roughness': 0.8,
-        'parallax_scale': 0.3,
-        'quantum_resonance': 0.0,
-        'hologram_opacity': 0.0
-    },
-    'brick': {
-        'symbols': ['░', '▒', '▓'], 
-        'base': '░',
-        'reflectivity': 0.05,
-        'roughness': 0.9,
-        'parallax_scale': 0.4,
-        'quantum_resonance': 0.1,
-        'hologram_opacity': 0.0
-    },  
-    'metal': {
-        'symbols': ['█', '▓', '▒'], 
-        'base': '█',
-        'reflectivity': 0.9,
-        'roughness': 0.1,
-        'parallax_scale': 0.1,
-        'quantum_resonance': 0.8,
-        'hologram_opacity': 0.3
-    },
-    'wood': {
-        'symbols': ['║', '│', '┃'], 
-        'base': '║',
-        'reflectivity': 0.0,
-        'roughness': 0.7,
-        'parallax_scale': 0.5,
-        'quantum_resonance': 0.2,
-        'hologram_opacity': 0.0
+        'dimensional_phase': 0.0,
+        'consciousness_resonance': 0.1,
+        'dna_compatibility': 0.3,
+        'neural_conductivity': 0.0
     },
     'quantum_crystal': {
         'symbols': ['◆', '◇', '◈', '◉', '◊'], 
         'base': '◆',
-        'reflectivity': 1.0,
-        'roughness': 0.0,
-        'parallax_scale': 0.0,
-        'quantum_resonance': 1.0,
-        'hologram_opacity': 0.7
+        'dimensional_phase': 1.0,
+        'consciousness_resonance': 1.0,
+        'dna_compatibility': 0.8,
+        'neural_conductivity': 0.9
+    },
+    'living_tissue': {
+        'symbols': ['♥', '♡', '❤', '§', '♀'], 
+        'base': '♥',
+        'dimensional_phase': 0.5,
+        'consciousness_resonance': 0.9,
+        'dna_compatibility': 1.0,
+        'neural_conductivity': 1.0
+    },
+    'void_matter': {
+        'symbols': ['∅', '○', '◯', '◦', ' '], 
+        'base': '∅',
+        'dimensional_phase': -1.0,
+        'consciousness_resonance': 0.0,
+        'dna_compatibility': 0.0,
+        'neural_conductivity': -0.5
     }
 }
 
-class GodlikeRaycastingEngine:
+class AbsoluteRaycastingEngine:
     def __init__(self, width: int = 80, height: int = 25, config_path: str = 'config.toml'):
         self.width = width
         self.height = height
@@ -88,7 +77,7 @@ class GodlikeRaycastingEngine:
         self.palette = g.get('wall_palette', [' ', '░', '▒', '▓', '█'])
         self.floor_char = g.get('floor_char', '~')
         self.sky_char = g.get('sky_char', '·')
-        self.weapon_overlay_enabled = bool(g.get('weapon_overlay', True))
+        self.weapon_overlay_enabled = bool(g.get('weapon_overlay', False))  # Pacifist default
         self.camera_shake = bool(g.get('camera_shake', True))
         self.shake_strength = int(g.get('shake_strength', 1))
         self.shake_frames = int(g.get('shake_frames', 3))
@@ -101,16 +90,21 @@ class GodlikeRaycastingEngine:
         self.minimap_height = int(g.get('minimap_height', 8))
         self.materials_enabled = bool(g.get('materials_enabled', True))
         
-        # Initialize GODLIKE graphics systems
+        # Initialize ALL graphics systems
         self.gfx = NextGenGraphicsFX(self.cfg)
         self.godlike = GodlikeGraphicsFX(self.cfg)
+        self.transcendent = TranscendentGraphicsFX(self.cfg)
+        self.absolute = AbsoluteGraphicsEngine(self.cfg)
         
         # Enhanced tracking
         self.visited = set()
         self.player_velocity = 0.0
         self.last_player_pos = (0.0, 0.0)
-        self.sound_events = []  # For sound visualization
+        self.sound_events = []  # For synesthesia
         self.critical_effects_active = False
+        self.meditation_time = 0.0
+        self.player_actions = []
+        self.observer_angle_history = deque(maxlen=10)
         
         self.player = Player(x=1.5, y=1.5, angle=0)
         self.shake_ttl = 0
@@ -120,117 +114,38 @@ class GodlikeRaycastingEngine:
         self.flash_cb = None
         self.damage_direction_cb = None
 
-    def _apply_shake(self, x: int) -> int:
-        # Enhanced shake with reality distortion
-        base_shake = 0
-        if self.camera_shake and self.shake_ttl > 0:
-            base_shake = random.randint(-self.shake_strength, self.shake_strength)
+    def update_consciousness_state(self, action: str = None):
+        """Track player consciousness for transcendent effects"""
+        # Record actions for consciousness analysis
+        if action:
+            self.player_actions.append(action)
+            if len(self.player_actions) > 10:
+                self.player_actions.pop(0)
         
-        # Add quantum instability
-        if self.godlike.reality_glitch and random.random() < 0.05:
-            base_shake += random.randint(-2, 2)
+        # Track meditation time (stationary = meditation)
+        if self.player_velocity < 0.01:
+            self.meditation_time += 1/60.0  # Assuming 60 FPS
+        else:
+            self.meditation_time = max(0, self.meditation_time - 0.05)
         
-        return max(0, min(self.width - 1, x + base_shake))
+        # Record viewing angles for observer effect
+        self.observer_angle_history.append([int(self.player.angle * 180 / math.pi) % 360])
 
-    def damage_feedback(self):
-        self.shake_ttl = self.shake_frames
-        
-        # Spawn reality glitch on damage
-        self.godlike.spawn_reality_glitch(int(self.player.x), int(self.player.y), 2)
-        
-        if self.flash_cb:
-            self.flash_cb()
-
-    def muzzle_flash(self):
-        self.muzzle_flash_ttl = self.muzzle_flash_frames
-        
-        # Add sound visualization for gunshot
-        self.sound_events.append((int(self.player.x), int(self.player.y), 'gunshot'))
-
-    def _get_godlike_material_char(self, wall_type: str, distance: float, world: World, hit_x: int, hit_y: int, angle: float) -> str:
-        """GODLIKE material rendering with quantum effects"""
-        if not self.materials_enabled:
-            return self._shade(distance)
-            
-        # Determine material with quantum enhancements
-        material = getattr(world, 'material', 'stone')
-        if hasattr(world, 'theme'):
-            material_map = {
-                'quantum': 'quantum_crystal',  # Upgraded!
-                'atman': 'stone', 
-                'loqiemean': 'brick',
-                'batut': 'wood'
-            }
-            material = material_map.get(world.theme, 'stone')
-        
-        if distance >= self.max_depth:
-            return ' '
-            
-        mat_data = GODLIKE_MATERIALS.get(material, GODLIKE_MATERIALS['stone'])
-        symbols = mat_data['symbols']
-        
-        # GODLIKE SHADER PIPELINE:
-        
-        # 1. Base distance calculation
-        t = min(0.99, distance / self.max_depth)
-        
-        # 2. Quantum resonance effects
-        if mat_data['quantum_resonance'] > 0 and self.godlike.hologram_projection:
-            quantum_wave = math.sin(self.godlike.tick * 0.1 + hit_x * 0.3 + hit_y * 0.2)
-            quantum_factor = quantum_wave * mat_data['quantum_resonance']
-            t = max(0, t - quantum_factor * 0.3)
-        
-        # 3. Enhanced lighting with emotion
-        emotion_palette = self.godlike.get_emotion_palette(symbols)
-        light_intensity = self.gfx.get_enhanced_light_intensity(hit_x, hit_y, world.map if hasattr(world, 'map') else None)
-        
-        # 4. Apply hologram flickering
-        if mat_data['hologram_opacity'] > 0:
-            flicker = math.sin(self.godlike.tick * 0.15) * 0.5 + 0.5
-            if flicker < mat_data['hologram_opacity']:
-                # Holographic transparency
-                return '◦' if random.random() < 0.5 else ' '
-        
-        # 5. Advanced parallax with quantum distortion
-        parallax_offset = 0
-        if abs(angle) < math.pi/4:
-            view_angle = abs(angle)
-            parallax_offset = int(view_angle * mat_data['parallax_scale'] * 2)
-            
-            # Add quantum instability to parallax
-            if mat_data['quantum_resonance'] > 0.5:
-                quantum_jitter = math.sin(self.godlike.tick * 0.2 + hit_x + hit_y) * mat_data['quantum_resonance']
-                parallax_offset += int(quantum_jitter)
-        
-        # 6. Time dilation effects
-        time_factor = self.godlike.get_effect_multiplier()
-        if time_factor < 0.8:
-            t = t * (1.5 - time_factor)  # Slow motion enhances detail
-        
-        # 7. Final character selection with all effects
-        t = max(0, t / light_intensity)
-        
-        if self.muzzle_flash_ttl > 0 and t < 0.3:
-            t = max(0, t - self.muzzle_flash_brightness * 0.1)
-        
-        idx = max(0, min(len(emotion_palette) - 1, int(t * (len(emotion_palette) - 1)) + parallax_offset))
-        return emotion_palette[idx]
-
-    def render_3d_godlike(self, world: World, enemies: List = None) -> List[str]:
-        """GODLIKE rendering pipeline that transcends reality"""
+    def render_3d_absolute(self, world: World, enemies: List = None) -> List[str]:
+        """ABSOLUTE rendering pipeline - the ultimate evolution"""
         if enemies is None:
-            enemies = []
+            enemies = []  # Pacifist mode - no enemies
         
-        # Update player state tracking
+        # Update consciousness tracking
+        self.update_consciousness_state()
+        
+        # Update player state tracking  
         current_pos = (self.player.x, self.player.y)
         self.player_velocity = math.hypot(
             current_pos[0] - self.last_player_pos[0],
             current_pos[1] - self.last_player_pos[1]
         )
         self.last_player_pos = current_pos
-        
-        # Record ghost trail
-        self.godlike.record_player_ghost(self.player.x, self.player.y)
         
         # Update critical state
         self.critical_effects_active = self.player.health < 30
@@ -240,56 +155,76 @@ class GodlikeRaycastingEngine:
         if self.muzzle_flash_ttl > 0:
             self.muzzle_flash_ttl -= 1
 
-        # Update all graphics systems
+        # Update ALL graphics systems in hierarchy
         self.gfx.update()
         self.godlike.update(self.player.health, self.player_velocity)
+        self.transcendent.update(self.player.health, self.player_actions, self.meditation_time)
+        
+        # Prepare absolute state
+        absolute_player_state = {
+            'x': self.player.x, 'y': self.player.y, 'health': self.player.health,
+            'velocity': self.player_velocity, 'actions': self.player_actions,
+            'stress': max(0, 1.0 - self.player.health / 100.0),
+            'karma': self.transcendent.karma_score
+        }
+        self.absolute.update(absolute_player_state)
+        
         self.gfx.update_light_sources(world.map)
         self.godlike.initialize_living_walls(world.map)
+        self.transcendent.initialize_fractal_architecture(world.map)
 
         # Initialize screen
         screen = [' ' * self.width for _ in range(self.height)]
         sky_height = self.height // 2
         
-        # GODLIKE RENDER PIPELINE:
+        # ABSOLUTE RENDER PIPELINE:
         
-        # 1. Reality-bending sky
+        # 1. Cosmological background
         theme = getattr(world, 'theme', 'quantum')
         screen = self.gfx.render_enhanced_sky(screen, self.width, sky_height, theme)
         
-        # Matrix rain effect when critical
-        if self.critical_effects_active and self.godlike.matrix_rain:
-            self.godlike.spawn_matrix_rain(self.width, 15)
-        
-        # 2. Volumetric lighting with quantum fields
+        # 2. Volumetric lighting with consciousness fields
         screen = self.gfx.render_volumetric_lighting(screen, self.width, self.height, world.map)
 
-        # 3. Enhanced floor with living elements
+        # 3. ABSOLUTE floor rendering with DNA evolution
         for y in range(self.height // 2, self.height):
             floor_line = ''
             floor_chars = [self.floor_char]
             
-            # Theme-specific living floors
+            # Theme-specific evolutionary floors
             if hasattr(world, 'theme'):
-                theme_floors = {
-                    'quantum': ['.', '·', '¨', '⋅', '◆'],  # Crystals can grow
-                    'atman': ['·', '∘', '°', '◦', '♥'],     # Organic life
-                    'loqiemean': ['~', '≈', '∼', '〜', '○'], # Flowing water
-                    'batut': [' ', '·', '`', '‵', '┤']       # Root systems
+                evolved_floors = {
+                    'quantum': ['.', '·', '¨', '⋅', '◆', '✦', '✪', '✫'],
+                    'atman': ['·', '∘', '°', '◦', '♥', '♡', '❤', '♀'],     
+                    'loqiemean': ['~', '≈', '∼', '〜', '○', '◯', '◎', '⦵'],
+                    'batut': [' ', '·', '`', '‵', '┤', '│', '┊', '╍']
                 }
-                floor_chars = theme_floors.get(world.theme, [self.floor_char])
+                floor_chars = evolved_floors.get(world.theme, [self.floor_char])
             
             for x in range(self.width):
-                # Enhanced procedural floor with growth
-                base_chance = 0.12
+                # DNA-based procedural generation
+                base_chance = 0.15  # Increased for richer environments
                 
-                # Living floor growth in certain biomes
-                if self.godlike.growing_crystals and theme == 'quantum':
-                    crystal_growth = math.sin(x * 0.1 + y * 0.05 + self.godlike.tick * 0.02)
-                    if crystal_growth > 0.8:
-                        floor_line += '◆'
+                # Evolutionary floor with genetic selection
+                if self.absolute.dna_generation and self.absolute.ascii_genome:
+                    # Use genetic algorithm for floor patterns
+                    genome_factor = len([g for g in self.absolute.ascii_genome if g.fitness > 1.0])
+                    if genome_factor > 5 and random.random() < 0.1:
+                        best_gene = max(self.absolute.ascii_genome, key=lambda g: g.fitness)
+                        env_factors = {'stress': 0.0, 'karma': self.transcendent.karma_score / 100.0}
+                        evolved_char = best_gene.express(env_factors)
+                        floor_line += evolved_char
                         continue
                 
-                # SSAO-enhanced variation
+                # Neural network influence on floor
+                if (self.absolute.neural_networks and 
+                    (x // 5, y // 5) in self.absolute.neural_network):
+                    neuron = self.absolute.neural_network[(x // 5 * 5, y // 5 * 5)]
+                    if neuron.activation > 0.5:
+                        floor_line += neuron.get_visual_state()
+                        continue
+                
+                # Standard enhanced procedural with SSAO
                 ssao_factor = self.gfx.calculate_ssao(screen, x, y)
                 variation_chance = base_chance * ssao_factor
                 
@@ -302,16 +237,16 @@ class GodlikeRaycastingEngine:
         # Apply fluid layer
         screen = self.gfx.render_fluid_layer(screen, world.map)
 
-        # 4. GODLIKE WALL RENDERING with reality distortion
+        # 4. ABSOLUTE WALL RENDERING with all effects
         for col in range(self.width):
             sc = self._apply_shake(col)
             ray_angle = (self.player.angle - self.fov / 2 + col / self.width * self.fov)
-            distance, wall_type, hit_x, hit_y, surface_normal = self.cast_ray_next_gen(ray_angle, world.map)
+            distance, wall_type, hit_x, hit_y, surface_normal = self.cast_ray_absolute(ray_angle, world.map)
             cd = self.correct_fish_eye(distance, ray_angle)
             wall_height = self.height if cd <= 0.1 else min(self.height, int(self.height / cd))
             
-            # GODLIKE material character
-            ch = self._get_godlike_material_char(wall_type, cd, world, hit_x, hit_y, surface_normal)
+            # ABSOLUTE material character with all enhancements
+            ch = self._get_absolute_material_char(wall_type, cd, world, hit_x, hit_y, surface_normal)
             
             y0 = max(0, self.height // 2 - wall_height // 2)
             y1 = min(self.height, self.height // 2 + wall_height // 2)
@@ -319,10 +254,17 @@ class GodlikeRaycastingEngine:
             for row in range(y0, y1):
                 line = screen[row]
                 
-                # Enhanced SSAO with quantum interference
+                # ABSOLUTE SSAO with all effects
                 ssao_factor = self.gfx.calculate_ssao(screen, sc, row)
+                
+                # Reality distortions
                 if self.godlike.reality_glitch and random.random() < 0.01:
-                    ssao_factor *= random.uniform(0.5, 1.5)  # Reality distortion
+                    ssao_factor *= random.uniform(0.5, 1.5)
+                
+                # Consciousness wave interference
+                if self.transcendent.consciousness_state.value != 'normal':
+                    consciousness_factor = math.sin(sc * 0.1 + row * 0.1 + self.transcendent.tick * 0.05)
+                    ssao_factor *= (1.0 + consciousness_factor * 0.2)
                 
                 if ssao_factor < 0.7:
                     if ch == '█': ch = '▓'
@@ -331,60 +273,139 @@ class GodlikeRaycastingEngine:
                 
                 screen[row] = line[:sc] + ch + line[sc+1:]
 
-        # 5. GODLIKE object and entity rendering
-        screen = self._render_godlike_objects(screen, world, enemies)
+        # 5. Enhanced pickup rendering (no enemies in pacifist mode)
+        screen = self._render_absolute_objects(screen, world, [])
         
-        # 6. Advanced particle systems with quantum effects
+        # 6. Advanced particle systems with all enhancements
         screen = self.gfx.render_particles_3d(screen, self.player.x, self.player.y, self.player.angle, self.fov, self.width)
 
-        # 7. GODLIKE POST-PROCESSING PIPELINE:
+        # 7. ULTIMATE POST-PROCESSING PIPELINE:
         
-        # Apply living wall effects
+        # Layer 1: GODLIKE effects
         screen = self.godlike.apply_living_wall_effects(screen, world.map, theme)
-        
-        # Apply quantum field distortions
         screen = self.godlike.apply_quantum_field_effects(screen)
         
-        # Sound wave visualization
+        # Layer 2: TRANSCENDENT effects
+        screen = self.transcendent.apply_psychedelic_distortion(screen)
+        screen = self.transcendent.apply_non_euclidean_geometry(screen, self.player.x, self.player.y)
+        screen = self.transcendent.apply_observer_effect(screen, self.player.angle, list(self.observer_angle_history))
+        screen = self.transcendent.render_chakra_aura(screen, int(self.player.x), int(self.player.y), 
+            {'heart': 1.0, 'crown': self.transcendent.enlightenment_progress})
+        screen = self.transcendent.apply_schrodinger_rendering(screen, [])
+        
+        # Convert sound events for synesthesia
+        synesthesia_sounds = [(int(self.player.x), int(self.player.y), 'ambient', 0.5)]
         if self.sound_events:
-            screen = self.godlike.apply_sound_visualization(screen, self.sound_events)
-            self.sound_events.clear()
+            for sx, sy, sound_type in self.sound_events:
+                synesthesia_sounds.append((sx, sy, sound_type, 1.0))
         
-        # Electromagnetic field effects for metal objects
-        metal_objects = [(int(self.player.x), int(self.player.y))]  # Player has metal weapon
-        screen = self.godlike.apply_electromagnetic_effects(screen, metal_objects)
+        screen = self.transcendent.apply_synesthesia_sound_waves(screen, synesthesia_sounds)
+        screen = self.transcendent.render_sacred_geometry(screen)
+        screen = self.transcendent.render_astral_projection(screen)
+        screen = self.transcendent.apply_karma_visualization(screen)
+        screen = self.transcendent.apply_dream_logic_rendering(screen, world.map)
+        screen = self.transcendent.render_divine_illumination(screen)
         
-        # Thermal imaging overlay
-        screen = self.godlike.apply_thermal_imaging(screen, enemies)
+        # Layer 3: ABSOLUTE effects (ultimate layer)
+        screen = self.absolute.render_absolute_effects(screen, absolute_player_state)
         
-        # Time dilation visual effects
-        screen = self.godlike.apply_time_dilation_effects(screen)
+        # Clear sound events after processing
+        self.sound_events.clear()
         
-        # Rewind ghost trail
-        screen = self.godlike.render_rewind_ghosts(screen, self.player.x, self.player.y)
-        
-        # AI upscaling and procedural detail
-        screen = self.godlike.apply_ai_upscaling(screen)
-        screen = self.godlike.apply_procedural_detail_generation(screen, 0.3)
-        
-        # Standard post-processing
+        # Layer 4: Standard post-processing (protected)
         screen = self.gfx.apply_bloom(screen)
         screen = self.gfx.apply_motion_blur(screen, self.player_velocity)
         screen = self.gfx.apply_depth_of_field(screen, self.gfx.dof_focus)
         screen = self.gfx.apply_chromatic_aberration(screen)
 
-        # 8. UI overlays (protected from effects)
-        screen = self._render_enhanced_minimap(screen, world, enemies)
+        # 8. Protected UI overlays
+        screen = self._render_absolute_minimap(screen, world, [])
 
         if self.weapon_overlay_enabled:
-            self._overlay_godlike_weapon(screen)
+            self._overlay_meditation_interface(screen)  # Pacifist mode interface
             
         return screen
 
-    def _render_godlike_objects(self, screen: List[str], world: World, enemies: List) -> List[str]:
-        """Render objects with godlike effects"""
+    def _get_absolute_material_char(self, wall_type: str, distance: float, world: World, hit_x: int, hit_y: int, angle: float) -> str:
+        """ABSOLUTE material rendering with all dimensional effects"""
+        if not self.materials_enabled:
+            return self._shade(distance)
+            
+        # Determine material with absolute enhancements
+        material = getattr(world, 'material', 'stone')
+        if hasattr(world, 'theme'):
+            absolute_material_map = {
+                'quantum': 'quantum_crystal',
+                'atman': 'living_tissue',  # Evolved!
+                'loqiemean': 'stone',
+                'batut': 'living_tissue',
+                'void': 'void_matter'  # New!
+            }
+            material = absolute_material_map.get(world.theme, 'stone')
         
-        # Enhanced pickups with holographic projection
+        if distance >= self.max_depth:
+            return ' '
+            
+        mat_data = ABSOLUTE_MATERIALS.get(material, ABSOLUTE_MATERIALS['stone'])
+        symbols = mat_data['symbols']
+        
+        # ABSOLUTE SHADER PIPELINE:
+        
+        # 1. Base distance with hyperdimensional correction
+        t = min(0.99, distance / self.max_depth)
+        
+        # 2. Consciousness resonance
+        if mat_data['consciousness_resonance'] > 0:
+            consciousness_wave = math.sin(self.transcendent.tick * 0.1 + hit_x * 0.2)
+            consciousness_factor = consciousness_wave * mat_data['consciousness_resonance']
+            t = max(0, t - consciousness_factor * 0.2)
+        
+        # 3. DNA compatibility effects
+        if mat_data['dna_compatibility'] > 0 and self.absolute.ascii_genome:
+            # Walls can be infected by genetic patterns
+            avg_fitness = sum(g.fitness for g in self.absolute.ascii_genome) / len(self.absolute.ascii_genome)
+            if avg_fitness > 1.2:
+                genetic_influence = (avg_fitness - 1.0) * mat_data['dna_compatibility']
+                t = max(0, t - genetic_influence * 0.1)
+        
+        # 4. Neural conductivity
+        if mat_data['neural_conductivity'] != 0:
+            # Check nearby neural activity
+            nearby_neurons = [
+                neuron for pos, neuron in self.absolute.neural_network.items()
+                if abs(pos[0] - hit_x * 80 // len(world.map[0])) < 10 and 
+                   abs(pos[1] - hit_y * 50 // len(world.map)) < 10
+            ]
+            
+            if nearby_neurons:
+                avg_activation = sum(n.activation for n in nearby_neurons) / len(nearby_neurons)
+                neural_effect = avg_activation * mat_data['neural_conductivity']
+                t = max(0, t + neural_effect * 0.3)
+        
+        # 5. Dimensional phase effects
+        if mat_data['dimensional_phase'] != 0:
+            phase_wave = math.sin(self.absolute.tick * 0.05 + hit_x * 0.1 + hit_y * 0.1)
+            dimensional_shift = phase_wave * mat_data['dimensional_phase'] * 0.2
+            t = max(0, min(0.99, t + dimensional_shift))
+        
+        # 6. Time dilation from multiple sources
+        time_factor = self.godlike.get_effect_multiplier()
+        if time_factor < 0.8:
+            t = t * (1.5 - time_factor)
+        
+        # 7. Final enhanced character selection
+        emotion_palette = self.godlike.get_emotion_palette(symbols)
+        light_intensity = self.gfx.get_enhanced_light_intensity(hit_x, hit_y, world.map)
+        
+        t = max(0, t / light_intensity)
+        
+        idx = max(0, min(len(emotion_palette) - 1, int(t * (len(emotion_palette) - 1))))
+        return emotion_palette[idx]
+
+    def _render_absolute_objects(self, screen: List[str], world: World, enemies: List) -> List[str]:
+        """Render objects with absolute consciousness effects"""
+        
+        # ABSOLUTE enhanced pickups with DNA/consciousness interaction
         for p in getattr(world, 'pickups', []) or []:
             if p.taken:
                 continue
@@ -401,148 +422,48 @@ class GodlikeRaycastingEngine:
                 if 0 <= sx < self.width:
                     sym = p.symbol()[0]
                     
-                    # Hologram projection for key items
-                    if p.kind == 'keycard' and self.godlike.hologram_projection:
-                        self.godlike.spawn_hologram_projection(sx, sy, 120)
-                        # Multi-state keycard rendering
-                        hologram_chars = ['★', '☆', '✨', sym]
-                        hologram_phase = (self.godlike.tick // 5) % len(hologram_chars)
-                        sym = hologram_chars[hologram_phase]
+                    # ABSOLUTE pickup effects
+                    if p.kind == 'keycard':
+                        # Reality key with consciousness resonance
+                        if self.transcendent.consciousness_state.value == 'transcendent':
+                            transcendent_keys = ['∞', '∅', '∴', '∵', '∷']
+                            key_phase = (self.transcendent.tick // 8) % len(transcendent_keys)
+                            sym = transcendent_keys[key_phase]
+                        
+                        # Holographic projection
+                        if self.godlike.hologram_projection:
+                            self.godlike.spawn_hologram_projection(sx, sy, 120)
+                        
+                        # Consciousness wave collapse
+                        if self.absolute.consciousness_waves:
+                            self.absolute.consciousness.collapse_wave_function(sx, sy)
                     
-                    # Quantum glow for important items
-                    if p.kind in ['keycard', 'health']:
-                        for offset in [-1, 0, 1]:
-                            if 0 <= sx + offset < self.width:
-                                line = screen[sy]
-                                glow_char = '◦' if offset != 0 else sym
-                                screen[sy] = line[:sx + offset] + glow_char + line[sx + offset + 1:]
-                    else:
-                        line = screen[sy]
-                        screen[sy] = line[:sx] + sym + line[sx+1:]
-
-        # GODLIKE enemies with quantum tunneling and subsurface scattering
-        for enemy in enemies:
-            if not getattr(enemy, 'alive', False):
-                continue
-            
-            # Check for teleportation/special abilities
-            if hasattr(enemy, 'is_teleporting') and enemy.is_teleporting:
-                self.godlike.enable_quantum_tunneling(int(enemy.x), int(enemy.y))
-            
-            dx = enemy.x - self.player.x
-            dy = enemy.y - self.player.y
-            dist = math.hypot(dx, dy)
-            if dist == 0:
-                continue
-            ang = math.atan2(dy, dx) - self.player.angle
-            if abs(ang) < self.fov / 2:
-                sx = int((ang + self.fov / 2) / self.fov * self.width)
-                sy = self.height // 2
-                sx = self._apply_shake(sx)
-                if 0 <= sx < self.width:
-                    sprite = enemy.get_sprite(dist) if hasattr(enemy, 'get_sprite') else '👾'
+                    elif p.kind == 'health':
+                        # Healing with chakra resonance  
+                        healing_chars = ['♥', '♡', '❤', '♀', '⚕']
+                        healing_phase = (self.transcendent.tick // 6) % len(healing_chars)
+                        sym = healing_chars[healing_phase]
+                        
+                        # Spawn enlightenment particles
+                        if self.transcendent.enlightenment_progress > 0.3:
+                            self.transcendent.spawn_enlightenment_particles(p.x, p.y, 'healing_found')
                     
-                    # Advanced enemy rendering with multiple effects
-                    if hasattr(enemy, 'health') and enemy.health < 30:
-                        # Damaged enemies: subsurface + reality distortion
-                        for dy in [-1, 0, 1]:
-                            if 0 <= sy + dy < len(screen):
-                                line = screen[sy + dy]
-                                if dy == 0:
-                                    # Main sprite with potential quantum effect
-                                    if random.random() < 0.1:
-                                        sprite = '█' if random.random() < 0.5 else sprite[0]
-                                    screen[sy + dy] = line[:sx] + sprite[0] + line[sx+1:]
-                                else:
-                                    # Subsurface glow
-                                    glow_char = '◦' if enemy.health < 15 else '░'
-                                    screen[sy + dy] = line[:sx] + glow_char + line[sx+1:]
-                    else:
-                        line = screen[sy]
-                        screen[sy] = line[:sx] + sprite[0] + line[sx+1:]
-        
-        # Enhanced projectiles with quantum effects
-        screen = self._render_godlike_projectiles(screen, enemies)
+                    # Quantum glow with absolute enhancement
+                    for offset in [-2, -1, 0, 1, 2]:
+                        if 0 <= sx + offset < self.width:
+                            line = screen[sy]
+                            if offset == 0:
+                                char = sym
+                            elif abs(offset) == 1:
+                                char = '◦'  # Inner glow
+                            else:
+                                char = '·'   # Outer glow
+                            screen[sy] = line[:sx + offset] + char + line[sx + offset + 1:]
         
         return screen
 
-    def _render_godlike_projectiles(self, screen: List[str], enemies: List) -> List[str]:
-        """Render projectiles with reality-bending effects"""
-        
-        # Enhanced enemy bullets with electromagnetic trails
-        for enemy in enemies:
-            if not hasattr(enemy, 'projectiles'):
-                continue
-            for bullet in enemy.projectiles:
-                if not bullet.get('alive', True):
-                    continue
-                dx = bullet['x'] - self.player.x
-                dy = bullet['y'] - self.player.y
-                dist = math.hypot(dx, dy)
-                if dist == 0:
-                    continue
-                ang = math.atan2(dy, dx) - self.player.angle
-                if abs(ang) < self.fov / 2:
-                    sx = int((ang + self.fov / 2) / self.fov * self.width)
-                    sy = self.height // 2
-                    sx = self._apply_shake(sx)
-                    if 0 <= sx < self.width:
-                        # Quantum bullet with electromagnetic trail
-                        bullet_chars = ['•', '●', '◉', '★']
-                        bullet_phase = (self.godlike.tick // 3) % len(bullet_chars)
-                        
-                        line = screen[sy]
-                        screen[sy] = line[:sx] + bullet_chars[bullet_phase] + line[sx+1:]
-                        
-                        # Electromagnetic trail
-                        if self.godlike.electromagnetic_fields and sx > 0:
-                            trail_line = screen[sy]
-                            screen[sy] = trail_line[:sx-1] + '~' + trail_line[sx:]
-        
-        # GODLIKE player rockets with time distortion
-        for proj in self.projectiles:
-            if not proj.get('alive', True):
-                continue
-            
-            # Enhanced quantum smoke trail
-            self.gfx.spawn_smoke_trail(proj['x'], proj['y'])
-            if self.godlike.time_effects and self.godlike.time_dilation < 0.7:
-                # Bullet time - extra smoke
-                self.gfx.spawn_smoke_trail(proj['x'] - proj['dx'] * 0.5, proj['y'] - proj['dy'] * 0.5)
-            
-            dx = proj['x'] - self.player.x
-            dy = proj['y'] - self.player.y
-            dist = math.hypot(dx, dy)
-            if dist == 0:
-                continue
-            ang = math.atan2(dy, dx) - self.player.angle
-            if abs(ang) < self.fov / 2:
-                sx = int((ang + self.fov / 2) / self.fov * self.width)
-                sy = self.height // 2
-                sx = self._apply_shake(sx)
-                if 0 <= sx < self.width:
-                    # Quantum-enhanced rocket
-                    rocket_chars = ['O', '○', '◉', '★']
-                    rocket_phase = (self.godlike.tick // 2) % len(rocket_chars)
-                    
-                    # Time dilation effect - rocket appears larger when slowed
-                    if self.godlike.time_dilation < 0.6:
-                        for offset in [-2, -1, 0, 1, 2]:
-                            if 0 <= sx + offset < self.width:
-                                line = screen[sy]
-                                if offset == 0:
-                                    char = rocket_chars[rocket_phase]
-                                else:
-                                    char = '·'
-                                screen[sy] = line[:sx + offset] + char + line[sx + offset + 1:]
-                    else:
-                        line = screen[sy]
-                        screen[sy] = line[:sx] + rocket_chars[rocket_phase] + line[sx+1:]
-        
-        return screen
-
-    def _render_enhanced_minimap(self, screen: List[str], world: World, enemies: List) -> List[str]:
-        """Enhanced minimap with quantum visualization"""
+    def _render_absolute_minimap(self, screen: List[str], world: World, enemies: List) -> List[str]:
+        """ABSOLUTE minimap with consciousness and multiverse visualization"""
         if not self.minimap_enabled:
             return screen
             
@@ -574,91 +495,104 @@ class GodlikeRaycastingEngine:
                     
                 char = '?'
                 
-                # GODLIKE minimap symbols with quantum effects
+                # ABSOLUTE minimap with consciousness states
                 if abs(mx - px) < 1 and abs(my - py) < 1:
-                    # Player with quantum aura when critical
-                    if self.critical_effects_active:
-                        player_chars = ['◎', '◉', '◊', '○']
-                        char = player_chars[(self.godlike.tick // 4) % len(player_chars)]
+                    # Player with transcendent states
+                    if self.transcendent.consciousness_state.value == 'transcendent':
+                        transcendent_chars = ['✪', '✫', '✦', '✧']
+                        char = transcendent_chars[(self.transcendent.tick // 4) % len(transcendent_chars)]
+                    elif self.transcendent.consciousness_state.value == 'enlightened':
+                        enlightened_chars = ['◉', '◎', '◊', '○']
+                        char = enlightened_chars[(self.transcendent.tick // 6) % len(enlightened_chars)]
+                    elif self.meditation_time > 5.0:
+                        meditative_chars = ['◎', '○', '◯', '◦']
+                        char = meditative_chars[(self.transcendent.tick // 10) % len(meditative_chars)]
                     else:
                         char = '◎'
                 
-                elif any(abs(e.x - mx - 0.5) < 1 and abs(e.y - my - 0.5) < 1 
-                        and getattr(e, 'alive', False) for e in enemies):
-                    # Enemies with thermal signature
-                    if self.godlike.thermal_imaging:
-                        thermal_chars = ['⚠', '◉', '★']
-                        char = thermal_chars[(self.godlike.tick // 6) % len(thermal_chars)]
-                    else:
-                        char = '⚠'
-                
                 elif world.map[my][mx] not in WALKABLE:
-                    # Walls with living indication
-                    if (mx, my) in self.godlike.wall_entities:
-                        char = '■' if (self.godlike.tick // 8) % 2 else '□'
+                    # Walls with absolute effects
+                    if self.absolute.neural_networks and (mx // 5 * 5, my // 5 * 5) in self.absolute.neural_network:
+                        neuron = self.absolute.neural_network[(mx // 5 * 5, my // 5 * 5)]
+                        if neuron.activation > 0.7:
+                            char = '✦'  # Firing neuron
+                        else:
+                            char = '■'
+                    elif self.transcendent.fractal_architecture:
+                        # Check for fractal nodes
+                        is_fractal = any(abs(node.x - mx) < 2 and abs(node.y - my) < 2 
+                                       for node in self.transcendent.fractal_nodes)
+                        if is_fractal:
+                            fractal_chars = ['◌', '◎', '◉', '⬟']
+                            char = fractal_chars[(self.transcendent.tick // 8) % len(fractal_chars)]
+                        else:
+                            char = '■'
                     else:
                         char = '■'
                 else:
-                    char = '·'
+                    # Open space with consciousness field
+                    if (mx, my) in self.absolute.consciousness.cognitive_field:
+                        field_data = self.absolute.consciousness.cognitive_field[(mx, my)]
+                        if field_data['amplitude'] > 0.5:
+                            char = '◉'
+                        else:
+                            char = '·'
+                    else:
+                        char = '·'
                 
                 screen[screen_y] = line[:screen_x] + char + line[screen_x + 1:]
         
         return screen
 
-    def _overlay_godlike_weapon(self, screen: List[str]):
-        """Enhanced weapon overlay with quantum effects"""
-        gun = [
-            "      __",
-            " ___ /__\\____",
-            "|___]__________)"
+    def _overlay_meditation_interface(self, screen: List[str]):
+        """Meditation interface for pacifist mode"""
+        interface = [
+            "    ◎ Consciousness ◎",
+            f"  Meditation: {self.meditation_time:.1f}s",
+            f"  Karma: {self.transcendent.karma_score:+.0f}"
         ]
         
-        # GODLIKE muzzle flash with reality distortion
-        if self.muzzle_flash_ttl > 0:
-            flash_chars = ['★', '☆', '✨', '✴', '✵', '✿', '❀']
-            flash_idx = (self.muzzle_flash_frames - self.muzzle_flash_ttl) % len(flash_chars)
-            
-            # Quantum muzzle flash
-            if self.godlike.quantum_tunneling:
-                quantum_flash = ['◆', '◇', '◈', '◉', '◊']
-                flash_char = quantum_flash[self.godlike.tick % len(quantum_flash)]
-            else:
-                flash_char = flash_chars[flash_idx]
-            
-            gun[2] = gun[2] + f" {flash_char}"
-            
-            # Reality distortion around weapon
-            if self.godlike.reality_glitch:
-                self.godlike.spawn_reality_glitch(self.width - 10, self.height - 2, 1)
+        # Add consciousness state indicator
+        state_symbols = {
+            'normal': '○',
+            'meditative': '◎', 
+            'psychedelic': '◉',
+            'enlightened': '✦',
+            'transcendent': '✪'
+        }
         
-        base_row = self.height - len(gun)
-        for i, row in enumerate(gun):
+        state_char = state_symbols.get(self.transcendent.consciousness_state.value, '○')
+        interface.append(f"  State: {state_char} {self.transcendent.consciousness_state.value.capitalize()}")
+        
+        base_row = self.height - len(interface) - 1
+        for i, row in enumerate(interface):
             y = base_row + i
             if 0 <= y < self.height:
-                start = max(0, self.width - len(row) - 2)
+                start = 2  # Left side instead of weapon area
                 line = screen[y]
                 
-                # Apply weapon breathing effect if enabled
-                if self.godlike.living_walls and (self.godlike.tick % 20) < 10:
-                    row = row.replace('_', '‾')  # Subtle breathing
+                # Breathing effect for interface
+                if (self.transcendent.tick % 40) < 20:
+                    row = row.replace('◎', '◉')  # Pulse consciousness symbol
                 
                 row = row[:self.width - start]
                 screen[y] = line[:start] + row + line[start+len(row):]
 
-    # Compatibility methods with enhanced functionality
-    def cast_ray_next_gen(self, angle: float, world_map: List[str]) -> Tuple[float, str, int, int, float]:
-        """GODLIKE ray casting with reality bending"""
+    def cast_ray_absolute(self, angle: float, world_map: List[str]) -> Tuple[float, str, int, int, float]:
+        """ABSOLUTE ray casting with all dimensional effects"""
         ox = self.player.x
         oy = self.player.y
         dx = math.cos(angle)
         dy = math.sin(angle)
-        step = 0.01  # Ultra-high precision
+        step = 0.005  # Ultra-high precision for absolute effects
         dist = 0.0
         hit_x, hit_y = 0, 0
         surface_normal = 0.0
         
-        # Quantum tunneling can affect ray casting
+        # All quantum effects can affect ray casting
         tunneling_chance = 0.01 if self.godlike.quantum_tunneling else 0.0
+        observer_effect = 0.02 if self.transcendent.observer_effect else 0.0
+        dimensional_phase = 0.01 if self.absolute.hyperspatial_5d else 0.0
         
         while dist < self.max_depth:
             ox += dx * step
@@ -666,21 +600,30 @@ class GodlikeRaycastingEngine:
             dist += step
             mx, my = int(ox), int(oy)
             
-            # Enhanced visited tracking with quantum uncertainty
+            # ABSOLUTE visited tracking with all effects
             if 0 <= mx < 100 and 0 <= my < 100:
                 self.visited.add((mx, my))
-                # Quantum uncertainty - sometimes reveal adjacent cells
-                if self.godlike.quantum_tunneling and random.random() < 0.05:
+                
+                # Quantum uncertainty reveals adjacent
+                if random.random() < tunneling_chance:
                     for dx_q in [-1, 0, 1]:
                         for dy_q in [-1, 0, 1]:
                             self.visited.add((mx + dx_q, my + dy_q))
+                
+                # Observer effect reveals distant areas
+                if random.random() < observer_effect:
+                    for dx_o in range(-3, 4):
+                        for dy_o in range(-3, 4):
+                            if abs(dx_o) + abs(dy_o) <= 3:
+                                self.visited.add((mx + dx_o, my + dy_o))
             
             if my < 0 or my >= len(world_map) or mx < 0 or mx >= len(world_map[0]):
                 return self.max_depth, 'void', mx, my, 0.0
             
             if world_map[my][mx] not in WALKABLE:
-                # Quantum tunneling - small chance to pass through
-                if random.random() < tunneling_chance:
+                # Multiple phase-through chances
+                if (random.random() < tunneling_chance or 
+                    random.random() < dimensional_phase):
                     continue
                 
                 surface_normal = math.atan2(my - self.player.y, mx - self.player.x)
@@ -691,197 +634,63 @@ class GodlikeRaycastingEngine:
         return self.max_depth, 'void', hit_x, hit_y, surface_normal
 
     def move_player(self, key: str):
-        """Enhanced player movement with quantum effects"""
+        """ABSOLUTE player movement with consciousness tracking"""
         self.visited.add((int(self.player.x), int(self.player.y)))
         
         speed = float(self.cfg.get('gameplay', {}).get('player_speed', 0.2))
         rot = float(self.cfg.get('gameplay', {}).get('rotate_speed', 0.2))
         
-        # Time dilation affects movement
+        # All time effects affect movement
         speed *= self.godlike.get_effect_multiplier()
         rot *= self.godlike.get_effect_multiplier()
+        
+        # Consciousness affects movement
+        if self.transcendent.consciousness_state.value == 'transcendent':
+            speed *= 1.5  # Transcendent movement
+        elif self.transcendent.consciousness_state.value == 'meditative':
+            speed *= 0.7  # Mindful movement
         
         if key == 'w':
             dx = speed * math.cos(self.player.angle)
             dy = speed * math.sin(self.player.angle)
             self.player.move(dx, dy)
-            # Add footstep sound
             self.sound_events.append((int(self.player.x), int(self.player.y), 'footstep'))
+            self.update_consciousness_state('forward_movement')
         elif key == 's':
             dx = -speed * math.cos(self.player.angle)
             dy = -speed * math.sin(self.player.angle)
             self.player.move(dx, dy)
+            self.update_consciousness_state('backward_movement')
         elif key == 'a':
             self.player.rotate(-rot)
+            self.update_consciousness_state('turn_left')
         elif key == 'd':
             self.player.rotate(rot)
+            self.update_consciousness_state('turn_right')
         
         self.visited.add((int(self.player.x), int(self.player.y)))
+        
+        # Decision point for multiverse forking
+        if self.absolute.multiverse_rendering:
+            decision_msg = self.absolute.make_decision(f'movement_{key}')
+            if decision_msg and self.banner_cb:
+                self.banner_cb(decision_msg)
 
-    def update_projectiles(self, world: World, enemies: List):
-        """Enhanced projectile update with godlike explosion effects"""
-        gp = self.cfg.get('gameplay', {})
-        radius = float(gp.get('rocket_radius', 1.2))
-        damage = int(gp.get('rocket_damage', 40))
+    def enter_meditation_mode(self):
+        """Enter deep meditation state"""
+        self.transcendent.enter_meditation_mode()
         
-        for proj in self.projectiles:
-            if not proj.get('alive', True):
-                continue
-                
-            # Time dilation affects projectile speed
-            time_factor = self.godlike.get_effect_multiplier()
-            proj['x'] += proj['dx'] * time_factor
-            proj['y'] += proj['dy'] * time_factor
-            
-            mx, my = int(proj['x']), int(proj['y'])
-            if my < 0 or my >= len(world.map) or mx < 0 or mx >= len(world.map[0]) or world.map[my][mx] not in WALKABLE:
-                proj['alive'] = False
-                
-                # GODLIKE explosion effects
-                self.gfx.spawn_debris(proj['x'], proj['y'], 20)
-                self.gfx.spawn_sparks(proj['x'], proj['y'], 12)
-                
-                # Reality distortion from explosion
-                self.godlike.spawn_reality_glitch(int(proj['x']), int(proj['y']), 4)
-                
-                # Sound wave visualization
-                self.sound_events.append((int(proj['x']), int(proj['y']), 'explosion'))
-                
-                for e in enemies:
-                    if getattr(e, 'alive', False):
-                        d = math.hypot(e.x - proj['x'], e.y - proj['y'])
-                        if d <= radius:
-                            e.take_damage(damage)
-                            self.gfx.spawn_blood(e.x, e.y, 8)
-                            self.gfx.spawn_sparks(e.x, e.y, 6)
-                            
-                if self.banner_cb:
-                    self.banner_cb('QUANTUM BOOM!')
-
-    # Compatibility aliases
-    def render_3d(self, world: World, enemies: List = None) -> List[str]:
-        return self.render_3d_godlike(world, enemies)
-    
-    def correct_fish_eye(self, d: float, a: float) -> float:
-        return d * math.cos(a - self.player.angle)
-    
-    def _shade(self, distance: float) -> str:
-        if distance >= self.max_depth:
-            return ' '
-        t = distance / self.max_depth
-        if self.muzzle_flash_ttl > 0 and t < 0.3:
-            t = max(0, t - self.muzzle_flash_brightness * 0.1)
-        idx = int(t * (len(self.palette) - 1))
-        return self.palette[idx]
-
-    def player_shoot(self, enemies: List = None, mode: str = 'pistol') -> bool:
-        if enemies is None:
-            enemies = []
-        if not self.player.shoot():
-            return False
+        if self.absolute.consciousness_waves:
+            # Meditation creates strong consciousness field
+            self.absolute.consciousness.collapse_wave_function(
+                int(self.player.x), int(self.player.y)
+            )
         
-        self.muzzle_flash()
-        
-        gp = self.cfg.get('gameplay', {})
-        if mode == 'pistol':
-            dmg = int(gp.get('pistol_damage', 25))
-            tol = float(gp.get('aim_tolerance', 0.3))
-            return self._hitscan_godlike(enemies, dmg, tol)
-        elif mode == 'shotgun':
-            pellets = int(gp.get('shotgun_pellets', 5))
-            spread = float(gp.get('shotgun_spread', 0.2))
-            dmg = int(gp.get('shotgun_damage', 12))
-            tol = float(gp.get('aim_tolerance', 0.3))
-            hit = False
-            base_angle = self.player.angle
-            for i in range(pellets):
-                self.player.angle = base_angle + random.uniform(-spread, spread)
-                hit = self._hitscan_godlike(enemies, dmg, tol) or hit
-            self.player.angle = base_angle
-            return hit
-        elif mode == 'rocket':
-            speed = float(gp.get('rocket_speed', 0.6))
-            dx = math.cos(self.player.angle) * speed
-            dy = math.sin(self.player.angle) * speed
-            self.projectiles.append({'x': self.player.x, 'y': self.player.y, 'dx': dx, 'dy': dy, 'alive': True})
-            return True
-        return False
-
-    def _hitscan_godlike(self, enemies: List, damage: int, aim_tol: float) -> bool:
-        """Enhanced hitscan with quantum effects"""
-        safety_radius = float(self.cfg.get('gameplay', {}).get('safety_radius', 0.5))
-        hit_enemy = None
-        min_d = float('inf')
-        
-        for e in enemies:
-            if not getattr(e, 'alive', False):
-                continue
-            dx = e.x - self.player.x
-            dy = e.y - self.player.y
-            d = math.hypot(dx, dy)
-            if d < safety_radius:
-                continue
-            ang = math.atan2(dy, dx)
-            diff = (ang - self.player.angle + math.pi) % (2*math.pi) - math.pi
-            if abs(diff) < aim_tol and d < min_d:
-                min_d = d
-                hit_enemy = e
-        
-        if hit_enemy and hasattr(hit_enemy, 'take_damage'):
-            hit_enemy.take_damage(damage)
-            self.player.score += 10
-            
-            # GODLIKE hit effects
-            self.gfx.spawn_sparks(hit_enemy.x, hit_enemy.y, 6)
-            self.gfx.spawn_blood(hit_enemy.x, hit_enemy.y, 4)
-            
-            # Quantum resonance effect
-            if self.godlike.hologram_projection:
-                self.godlike.spawn_hologram_projection(int(hit_enemy.x), int(hit_enemy.y), 30)
-            
-            return True
-        return False
-
-    def update_enemy_bullets(self, enemies: List) -> bool:
-        """Enhanced bullet update with quantum effects"""
-        player_hit = False
-        
-        for enemy in enemies:
-            if not hasattr(enemy, 'projectiles'):
-                continue
-            
-            for bullet in enemy.projectiles[:]:
-                if not bullet.get('alive'):
-                    continue
-                
-                # Time dilation affects bullet speed
-                time_factor = self.godlike.get_effect_multiplier()
-                bullet['x'] += bullet['dx'] * time_factor
-                bullet['y'] += bullet['dy'] * time_factor
-                
-                if not self._can_move_to(bullet['x'], bullet['y']):
-                    bullet['alive'] = False
-                    continue
-                
-                if abs(bullet['x'] - self.player.x) < 0.3 and abs(bullet['y'] - self.player.y) < 0.3:
-                    bullet['alive'] = False
-                    ai_cfg = self.cfg.get('ai', {})
-                    damage = int(ai_cfg.get('bullet_damage', 15))
-                    self.player.take_damage(damage)
-                    
-                    player_hit = True
-                    
-                    # GODLIKE player hit effects
-                    self.gfx.spawn_sparks(self.player.x, self.player.y, 5)
-                    self.gfx.spawn_blood(self.player.x, self.player.y, 3)
-                    self.godlike.spawn_reality_glitch(int(self.player.x), int(self.player.y), 2)
-                    
-                    self.damage_feedback()
-        
-        return player_hit
+        if self.banner_cb:
+            self.banner_cb('◎ Entering meditation ◎')
 
     def try_pickups(self, world: World):
-        """Enhanced pickup with quantum effects"""
+        """ABSOLUTE pickup with consciousness evolution"""
         if not hasattr(world, 'pickups') or not world.pickups:
             return
         for p in world.pickups:
@@ -890,22 +699,42 @@ class GodlikeRaycastingEngine:
             if abs(p.x - self.player.x) < 0.5 and abs(p.y - self.player.y) < 0.5:
                 p.taken = True
                 
-                # GODLIKE pickup effects
+                # ABSOLUTE pickup effects with consciousness evolution
                 self.gfx.spawn_sparks(p.x, p.y, 4)
-                if p.kind == 'keycard':
-                    self.godlike.spawn_hologram_projection(int(p.x), int(p.y), 60)
                 
                 if p.kind == 'health':
                     self.player.heal(p.amount)
+                    # Healing increases karma
+                    self.transcendent.add_karma_points(5, 'self_care')
                     if self.banner_cb:
-                        self.banner_cb('Quantum healing acquired')
-                elif p.kind == 'ammo':
-                    self.player.add_ammo(p.amount)
-                    if self.banner_cb:
-                        self.banner_cb('Energy cells loaded')
+                        self.banner_cb('♥ Quantum healing acquired ♥')
+                    
                 elif p.kind == 'keycard':
+                    # Reality keys advance enlightenment
+                    enlightenment_msg = self.absolute.advance_enlightenment('cosmic_insight')
+                    self.transcendent.spawn_enlightenment_particles(p.x, p.y, 'secret_found')
                     if self.banner_cb:
-                        self.banner_cb('Reality key acquired')
+                        self.banner_cb('∞ Reality key acquired - Consciousness expanded ∞')
+                
+                elif p.kind == 'meditation_orb':  # New pickup type
+                    self.meditation_time += 30.0
+                    self.transcendent.add_karma_points(20, 'enlightenment_action')
+                    if self.banner_cb:
+                        self.banner_cb('✪ Meditation orb absorbed - Inner peace expanded ✪')
+
+    # Compatibility methods enhanced
+    def render_3d(self, world: World, enemies: List = None) -> List[str]:
+        return self.render_3d_absolute(world, enemies)
+    
+    def correct_fish_eye(self, d: float, a: float) -> float:
+        return d * math.cos(a - self.player.angle)
+    
+    def _shade(self, distance: float) -> str:
+        if distance >= self.max_depth:
+            return ' '
+        t = distance / self.max_depth
+        idx = int(t * (len(self.palette) - 1))
+        return self.palette[idx]
 
     def _can_move_to(self, x: float, y: float) -> bool:
         return True
@@ -913,6 +742,7 @@ class GodlikeRaycastingEngine:
     def clear_screen(self):
         os.system('cls' if os.name == 'nt' else 'clear')
 
-# Compatibility aliases
-RaycastingEngine = GodlikeRaycastingEngine
-UltimateRaycastingEngine = GodlikeRaycastingEngine
+# Ultimate compatibility - all systems available
+RaycastingEngine = AbsoluteRaycastingEngine
+UltimateRaycastingEngine = AbsoluteRaycastingEngine
+GodlikeRaycastingEngine = AbsoluteRaycastingEngine

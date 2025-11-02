@@ -1,5 +1,5 @@
-# Ultimate CLI DOOM - TRANSCENDENT ASCII GRAPHICS Configuration
-# Consciousness-driven visual effects that transcend the boundaries of reality
+# Ultimate CLI DOOM - ABSOLUTE ASCII GRAPHICS Configuration
+# Beyond transcendence: Multiverse, 5D hyperspatial, consciousness waves, DNA evolution
 
 [graphics]
 fov = 1.0471975512
@@ -8,7 +8,7 @@ sky_gradient = ["·","·","·","."," "]
 wall_palette = [" ","░","▒","▓","█"]
 floor_char = "~"
 sky_char = "·"
-weapon_overlay = true
+weapon_overlay = false  # Pacifist mode
 camera_shake = true
 shake_strength = 1
 shake_frames = 3
@@ -29,12 +29,12 @@ fog_intensity = 0.25
 particles_enabled = true
 sparks_ttl = 3
 debris_ttl = 8
-particles_max = 500  # Increased for transcendent effects
+particles_max = 600  # Increased for absolute effects
 lights_enabled = true
 light_radius = 3
 light_pulse_speed = 1.2
 
-# ULTIMATE NEXT-GEN FEATURES (Optimized)
+# ULTIMATE NEXT-GEN FEATURES (Enhanced)
 reflections = false
 gi_volumetrics = true
 shadows = false
@@ -62,56 +62,103 @@ time_effects = false
 portal_rendering = false
 thermal_imaging = false
 
-# Godlike Tuning
 glitch_intensity = 0.05
 hologram_flicker = 0.3
 wall_breathing = 0.2
 
-# 🔮 TRANSCENDENT CONSCIOUSNESS EFFECTS (Experimental)
+# 🔮 TRANSCENDENT CONSCIOUSNESS EFFECTS (Spiritual)
 [transcendent_fx]
-# Consciousness & Perception
-psychedelic_distortion = false    # Screen breathes with consciousness
-synesthesia_effects = false       # Sounds become geometric patterns
-dream_logic = false              # Reality operates by dream rules
-memory_echoes = false            # Ghosts of past events patrol areas
+psychedelic_distortion = false
+synesthesia_effects = false
+dream_logic = false
+memory_echoes = false
+non_euclidean_spaces = false
+fractal_architecture = false
+karma_visualization = true   # Safe default
+chakra_energy = false
+astral_projection = false
+dimensional_bleeding = false
+observer_effect = false
+schrodinger_states = false
+quantum_entanglement = false
+wave_function_collapse = false
+sacred_geometry = false
+divine_illumination = false
+enlightenment_particles = false
+angelic_chorus = false
+transcendent_weapons = false
+thought_cannon = false
+reality_hacker = false
+love_beam = false
+void_launcher = false
 
-# Multidimensional Geometry
-non_euclidean_spaces = false     # Corridors longer inside than outside
-fractal_architecture = false     # Infinite recursive wall patterns
-four_d_shadows = false          # Objects cast 4D shadows
-topology_shifts = false         # Rooms connect impossibly
+distortion_strength = 0.3
+fractal_complexity = 0.2
+consciousness_sensitivity = 0.5
+karma_influence = 0.4
+enlightenment_threshold = 0.8
 
-# Metaphysical Systems
-karma_visualization = true       # Actions affect world colors (safe)
-chakra_energy = false           # Player aura affects environment
-astral_projection = false       # See souls of enemies
-dimensional_bleeding = false     # Other levels bleed through
+# 🌌 ABSOLUTE REALITY SYSTEMS (Experimental - Ultimate Power)
+[absolute_fx]
+# Multiverse & Parallel Realities
+multiverse_rendering = false      # Infinite parallel screens visualization
+cross_dimensional_blending = false # Symbols from different universes mix
+reality_fork_detection = false    # Auto-create universes on decisions
+parallel_universe_bleeding = false # See alternative realities
 
-# Quantum Consciousness
-observer_effect = false         # Walls change when not observed
-schrodinger_states = false      # Enemies exist in superposition
-quantum_entanglement = false    # Damage spreads between entities
-wave_function_collapse = false  # Reality solidifies on decisions
+# 5D Hyperspatial Mathematics
+hyperspatial_5d = false           # Klein bottles, Möbius strips, 4D shadows
+penrose_tessellation = false      # Non-repeating infinite patterns
+klein_bottle_topology = false     # Screen wraps through 4th dimension
+mobius_strip_effects = false      # Symbol mirror transformations
+four_d_shadows = false           # Objects cast 4D shadows
+topology_shifts = false          # Impossible room connections
 
-# Divine & Sacred
-sacred_geometry = false         # Mandala patterns appear
-divine_illumination = false     # God rays from nowhere
-enlightenment_particles = false # Achievement transcendence effects
-angelic_chorus = false          # Symbols harmonize and sing
+# Consciousness Wave Functions
+consciousness_waves = false       # Quantum decoherence visualization
+measurement_dependent = false     # Observation changes reality
+cognitive_resonance = false       # Thoughts create standing waves
+wave_function_collapse = false    # Reality solidifies on decisions
+quantum_decoherence = false       # Consciousness interference patterns
 
-# Transcendent Weapons
-transcendent_weapons = false    # Concept guns, love beams, void launchers
-thought_cannon = false          # Shoots ideas (∞ ∅ ∴ ∵ ∷)
-reality_hacker = false          # Rewrites reality in real-time
-love_beam = false               # Converts enemies through empathy
-void_launcher = false           # Erases parts of reality
+# DNA & Genetic Evolution
+dna_generation = false            # ASCII organisms with genetic code
+evolutionary_selection = false    # Survival of fittest patterns
+epigenetic_modulation = false     # Environment affects gene expression
+genetic_drift = false            # Random genetic changes over time
+natural_selection = false        # Pattern fitness selection
 
-# Transcendent Intensities
-distortion_strength = 0.3       # Psychedelic distortion amount
-fractal_complexity = 0.2        # Fractal pattern density
-consciousness_sensitivity = 0.5  # How responsive to mental state
-karma_influence = 0.4           # How much karma affects visuals
-enlightenment_threshold = 0.8   # When divine effects activate
+# Planck Scale Physics
+planck_scale = false             # Quantum foam at subpixel level
+virtual_particles = false        # Spontaneous particle pair creation
+string_theory_harmonics = false  # 1D string vibration patterns
+quantum_foam = false             # Space-time fluctuations
+vacuum_decay = false             # False vacuum collapse effects
+
+# Biological Neural Networks
+neural_networks = false          # Living ASCII neurons with synapses
+synaptic_plasticity = false      # Connection strength changes
+neural_oscillations = false      # Brain wave frequency effects
+dendrite_growth = false          # Neurons grow new connections
+neural_death = false             # Neurons die and regenerate
+
+# Cosmological Evolution
+cosmological_evolution = false    # Universe ages through cosmic phases
+big_bang_expansion = false       # Reality expands from single point
+galactic_clustering = false      # Large scale structure formation
+heat_death_entropy = false       # Maximum entropy uniformity
+dark_energy_effects = false      # Accelerating expansion
+cosmic_microwave_bg = false      # Remnant radiation patterns
+
+# Absolute System Parameters
+[absolute_fx.tuning]
+multiverse_blend_strength = 0.15  # Cross-reality bleeding intensity
+consciousness_sensitivity = 0.7   # How responsive to mental states
+dna_mutation_rate = 0.001        # Genetic algorithm mutation rate
+neural_firing_threshold = 0.7    # Neuron activation threshold
+cosmic_age_acceleration = 1.0    # Universe aging speed
+quantum_foam_density = 1.0       # Virtual particle density
+reality_stability = 0.8          # How stable base reality is
 
 # Performance Tuning
 [graphics.tuning]
@@ -126,23 +173,25 @@ safety_radius = 0.5
 aim_tolerance = 0.3
 player_speed = 0.2
 rotate_speed = 0.2
-pistol_damage = 25
-shotgun_pellets = 5
-shotgun_spread = 0.2
-shotgun_damage = 12
-rocket_speed = 0.6
-rocket_radius = 1.2
-rocket_damage = 40
+# Weapons disabled in pacifist mode
+pistol_damage = 0
+shotgun_pellets = 0
+shotgun_spread = 0.0
+shotgun_damage = 0
+rocket_speed = 0.0
+rocket_radius = 0.0
+rocket_damage = 0
 
 [ai]
-runner_speed = 0.07
-tank_speed = 0.03
-shooter_spawn_chance = 0.3
-tank_spawn_chance = 0.2
+# Enemies disabled in pacifist mode
+runner_speed = 0.0
+tank_speed = 0.0
+shooter_spawn_chance = 0.0
+tank_spawn_chance = 0.0
 telegraph_frames = 30
 fire_cooldown = 60
-bullet_speed = 0.4
-bullet_damage = 15
+bullet_speed = 0.0
+bullet_damage = 0
 
 [world]
 room_gen_enabled = true
@@ -152,92 +201,95 @@ room_size_min = 4
 room_size_max = 8
 
 [spawns]
-enemy_count = 6
-health_pack_chance = 0.08
-ammo_pack_chance = 0.10
-keycard_chance = 0.03
-door_count = 2
+# No enemies in pacifist mode
+enemy_count = 0
+health_pack_chance = 0.15  # More healing items for meditation
+ammo_pack_chance = 0.0     # No ammo needed
+keycard_chance = 0.05      # More exploration focus
+door_count = 3             # More areas to explore
 exit_count = 1
 
 [progression]
-difficulty_scaling = 0.1
-max_enemies_per_level = 12
-min_health_packs = 1
-max_health_packs = 4
+difficulty_scaling = 0.0   # No combat difficulty
+max_enemies_per_level = 0
+min_health_packs = 3       # Focus on wellness
+max_health_packs = 6
 
-# 🌠 TRANSCENDENT PRESETS - Choose Your Reality Level
+# 🌠 ABSOLUTE REALITY PRESETS - Choose Your Universal Constants
 
-# TRANSCENDENT PRESET - Maximum Consciousness Expansion (Spiritual Systems)
-# [transcendent_fx.preset.transcendent]
-# karma_visualization = true
-# chakra_energy = true
-# sacred_geometry = true
-# divine_illumination = true
-# enlightenment_particles = true
-# memory_echoes = true
-# astral_projection = true
-# consciousness_sensitivity = 1.0
-# enlightenment_threshold = 0.5
+# MULTIVERSE MASTER PRESET - All Parallel Realities
+# [absolute_fx.preset.multiverse_master]
+# multiverse_rendering = true
+# cross_dimensional_blending = true
+# reality_fork_detection = true
+# parallel_universe_bleeding = true
+# multiverse_blend_strength = 0.3
+# reality_stability = 0.6
 
-# PSYCHEDELIC PRESET - Reality Distortion (Artistic Systems)
-# [transcendent_fx.preset.psychedelic]
-# psychedelic_distortion = true
-# synesthesia_effects = true
-# dream_logic = true
-# fractal_architecture = true
-# non_euclidean_spaces = true
-# distortion_strength = 0.8
-# fractal_complexity = 0.6
-
-# QUANTUM PRESET - Physics-Breaking Effects (Scientific Systems)
-# [transcendent_fx.preset.quantum]
-# observer_effect = true
-# schrodinger_states = true
-# quantum_entanglement = true
-# dimensional_bleeding = true
+# HYPERSPATIAL ARCHITECT PRESET - 5D Mathematics
+# [absolute_fx.preset.hyperspatial_architect]
+# hyperspatial_5d = true
+# penrose_tessellation = true
+# klein_bottle_topology = true
+# mobius_strip_effects = true
 # four_d_shadows = true
+# topology_shifts = true
+
+# CONSCIOUSNESS PHYSICIST PRESET - Quantum Mind
+# [absolute_fx.preset.consciousness_physicist]
+# consciousness_waves = true
+# measurement_dependent = true
+# cognitive_resonance = true
 # wave_function_collapse = true
-
-# DIVINE PRESET - Sacred Gaming Experience (Mystical Systems)
-# [transcendent_fx.preset.divine]
-# sacred_geometry = true
-# divine_illumination = true
-# angelic_chorus = true
-# enlightenment_particles = true
-# transcendent_weapons = true
-# love_beam = true
-# thought_cannon = true
-
-# REALITY_HACKER PRESET - Ultimate Power (All Systems)
-# [transcendent_fx.preset.reality_hacker]
-# # Enable ALL transcendent effects
-# psychedelic_distortion = true
-# synesthesia_effects = true
-# dream_logic = true
-# memory_echoes = true
-# non_euclidean_spaces = true
-# fractal_architecture = true
-# karma_visualization = true
-# chakra_energy = true
-# astral_projection = true
-# dimensional_bleeding = true
-# observer_effect = true
-# schrodinger_states = true
-# sacred_geometry = true
-# divine_illumination = true
-# transcendent_weapons = true
-# reality_hacker = true
-# distortion_strength = 1.0
-# fractal_complexity = 1.0
+# quantum_decoherence = true
 # consciousness_sensitivity = 1.0
 
-# MEDITATION PRESET - Calm Transcendence (Peaceful Systems)
-# [transcendent_fx.preset.meditation]
-# karma_visualization = true
-# chakra_energy = true
-# sacred_geometry = true
-# memory_echoes = true
-# enlightenment_particles = true
-# distortion_strength = 0.2
-# consciousness_sensitivity = 0.8
-# enlightenment_threshold = 0.3
+# GENETIC ENGINEER PRESET - DNA Evolution
+# [absolute_fx.preset.genetic_engineer]
+# dna_generation = true
+# evolutionary_selection = true
+# epigenetic_modulation = true
+# genetic_drift = true
+# natural_selection = true
+# dna_mutation_rate = 0.005
+
+# NEUROSCIENTIST PRESET - Brain Simulation
+# [absolute_fx.preset.neuroscientist]
+# neural_networks = true
+# synaptic_plasticity = true
+# neural_oscillations = true
+# dendrite_growth = true
+# neural_firing_threshold = 0.6
+
+# COSMOLOGIST PRESET - Universe Evolution
+# [absolute_fx.preset.cosmologist]
+# cosmological_evolution = true
+# big_bang_expansion = true
+# galactic_clustering = true
+# heat_death_entropy = true
+# dark_energy_effects = true
+# cosmic_microwave_bg = true
+# cosmic_age_acceleration = 2.0
+
+# QUANTUM PHYSICIST PRESET - Planck Scale
+# [absolute_fx.preset.quantum_physicist]
+# planck_scale = true
+# virtual_particles = true
+# string_theory_harmonics = true
+# quantum_foam = true
+# vacuum_decay = true
+# quantum_foam_density = 2.0
+
+# REALITY ARCHITECT PRESET - Ultimate Power (WARNING: EXPERIMENTAL)
+# [absolute_fx.preset.reality_architect]
+# # ENABLE ALL ABSOLUTE SYSTEMS
+# multiverse_rendering = true
+# hyperspatial_5d = true
+# consciousness_waves = true
+# dna_generation = true
+# planck_scale = true
+# neural_networks = true
+# cosmological_evolution = true
+# multiverse_blend_strength = 0.4
+# consciousness_sensitivity = 1.0
+# reality_stability = 0.5
